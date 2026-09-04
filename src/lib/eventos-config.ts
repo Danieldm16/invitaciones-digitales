@@ -34,6 +34,12 @@ export const EVENTOS = {
         fechaISO: "2026-09-05T18:30:00", // <--- Para el reloj
         mesa_regalos: "https://www.amazon.com.mx/hz/wishlist/ls/IAE016G6M4B3?ref_=wl_share",
         musica_url: "https://www.bensound.com/bensound-music/bensound-happyrock.mp3",
+        galeria: [
+            "https://images.unsplash.com/photo-1511795409834-ef04bbd61622",
+            "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+            "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
+            "https://images.unsplash.com/photo-1583939003579-730e3918a45a"
+        ],
     },
     "boda-ana-y-juan": {
         tema: TEMAS.BODA_LUJO,
@@ -59,6 +65,12 @@ export const EVENTOS = {
             { h: "19:30", a: "Cóctel de Bienvenida" },
             { h: "21:00", a: "Banquete y Fiesta" },
             { h: "02:00", a: "Fin del Evento" }
-        ]
+        ],
+        galeria: [
+            "https://images.unsplash.com/photo-1511795409834-ef04bbd61622",
+            "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+            "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
+            "https://images.unsplash.com/photo-1583939003579-730e3918a45a"
+        ],
     }
 };

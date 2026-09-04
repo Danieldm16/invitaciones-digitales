@@ -88,15 +88,32 @@ const LayoutModerado = ({ data }: { data: any }) => {
           ))}
         </div>
 
-        {/* Galería Simple (Nueva en Moderada) */}
-        <div className="bg-white rounded-[2.5rem] p-6 shadow-lg">
-           <div className="flex items-center gap-2 mb-4 text-slate-400 uppercase text-[10px] font-bold tracking-widest">
-              <Camera size={14} /> Momentos
-           </div>
-           <div className="grid grid-cols-2 gap-2">
-              <div className="h-40 bg-slate-100 rounded-2xl overflow-hidden"><img src={data.foto_hero} className="w-full h-full object-cover" /></div>
-              <div className="h-40 bg-slate-100 rounded-2xl overflow-hidden flex items-center justify-center text-slate-300">Foto 2</div>
-           </div>
+        {/* --- SECCIÓN: GALERÍA SIMPLE (Moderado) --- */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-lg">
+            <div className="flex items-center gap-2 mb-6 text-slate-400 uppercase text-[10px] font-black tracking-widest">
+                <Camera size={14} /> Nuestros Momentos
+            </div>
+            
+            {/* Cuadrícula Simétrica: 2 columnas, fotos del mismo tamaño */}
+            <div className="grid grid-cols-2 gap-3">
+                {data.galeria?.slice(0, 4).map((foto: string, i: number) => (
+                    <div 
+                        key={i} 
+                        className="h-40 bg-slate-100 rounded-2xl overflow-hidden shadow-sm"
+                    >
+                        <img 
+                            src={foto} 
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                            alt={`Foto ${i}`} 
+                        />
+                    </div>
+                ))}
+            </div>
+            
+            {/* Mensaje sutil si hay más fotos, invitando al plan avanzado en el futuro */}
+            <p className="text-[9px] text-slate-300 mt-4 text-center italic uppercase tracking-wider">
+                Desliza para ver nuestra historia
+            </p>
         </div>
 
         {/* Datos y Regalos */}
@@ -205,6 +222,37 @@ const LayoutAvanzado = ({ data, pasesTotales }: { data: any, pasesTotales: numbe
            <p className="text-xs uppercase tracking-[0.2em] text-amber-400/60 mb-2">Pases exclusivos</p>
            <h3 className="text-2xl font-serif italic text-amber-50">Hemos reservado {pasesTotales} lugares para ti</h3>
         </div>
+
+        {/* --- GALERÍA PREMIUM --- */}
+        <section className="py-20">
+            <div className="flex items-center justify-center gap-4 mb-12">
+                <div className="h-[1px] w-12 bg-amber-400/30" />
+                <Camera className="text-amber-400" size={20} />
+                <h3 className="text-sm uppercase tracking-[0.4em] text-amber-100/60">Galería</h3>
+                <div className="h-[1px] w-12 bg-amber-400/30" />
+            </div>
+
+            {/* Mosaico de fotos */}
+            <div className="grid grid-cols-2 gap-3 px-2">
+                {data.galeria?.map((foto: string, i: number) => (
+                    <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                        className={`relative overflow-hidden rounded-2xl bg-white/5 ${
+                            i === 0 ? "col-span-2 h-64" : "h-48"
+                        }`}
+                    >
+                        <img 
+                            src={foto} 
+                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-700" 
+                            alt={`Foto ${i}`} 
+                        />
+                    </motion.div>
+                ))}
+            </div>
+        </section>
 
         {/* Cronograma / Detalles Dinámicos */}
         <div className="space-y-4">
