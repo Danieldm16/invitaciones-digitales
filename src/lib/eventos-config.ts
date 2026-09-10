@@ -7,13 +7,21 @@ export const TEMAS = {
         tarjeta: "bg-white",
         fuente: "font-sans",
     },
+    // BODA_LUJO: {
+    //     primario: "bg-amber-400",
+    //     acento: "text-amber-400",
+    //     boton: "bg-amber-400 text-black hover:bg-amber-500 shadow-amber-900/20",
+    //     fondo: "bg-[#0f0f0f]", // Fondo oscuro de lujo
+    //     tarjeta: "bg-white",
+    //     fuente: "font-serif",
+    // }
     BODA_LUJO: {
-        primario: "bg-amber-400",
-        acento: "text-amber-400",
-        boton: "bg-amber-400 text-black hover:bg-amber-500 shadow-amber-900/20",
-        fondo: "bg-[#0f0f0f]", // Fondo oscuro de lujo
-        tarjeta: "bg-white",
-        fuente: "font-serif",
+        primario: "bg-[#b89b5e]", // Oro viejo
+        acento: "text-[#b89b5e]",
+        boton: "bg-[#b89b5e] text-white hover:bg-[#a68a4f] shadow-xl shadow-[#b89b5e]/20",
+        fondo: "bg-[#0c0d0c]", // Negro profundo orgánico
+        tarjeta: "bg-[#141514] border border-white/5",
+        fuente: "font-serif tracking-widest",
     }
 };
 

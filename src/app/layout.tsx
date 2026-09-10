@@ -11,7 +11,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
+import type { Metadata, Viewport } from "next";
 export const metadata: Metadata = {
   title: "Nuestra Invitación | Invitaciones Digitales que Conectan",
   description: "Crea invitaciones elegantes e interactivas para tus eventos más especiales. Bodas, XV Años, Bautizos y más.",
@@ -30,7 +30,10 @@ export const metadata: Metadata = {
     ],
   },
   // Esto es para el color de la barra del navegador en móviles (el #ffffff del generador)
-  themeColor: "#ffffff", 
+  //themeColor: "#ffffff", 
+};
+export const viewport: Viewport = {
+  themeColor: "#ffffff", // Pon aquí el color que prefieras para la barra del navegador
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
