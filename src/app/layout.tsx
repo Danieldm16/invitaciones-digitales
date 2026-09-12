@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import type { Metadata, Viewport } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,15 +11,15 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-import type { Metadata, Viewport } from "next";
+
 export const metadata: Metadata = {
-  title: "Nuestra Invitación | Invitaciones Digitales que Conectan",
-  description: "Crea invitaciones elegantes e interactivas para tus eventos más especiales. Bodas, XV Años, Bautizos y más.",
+  title: "Nuestra Invitación | Invitaciones Digitales",
+  description: "Invitaciones que conectan. Diseños elegantes e interactivos para tus eventos más especiales.",
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon.ico", sizes: "any" }, // Fallback para navegadores viejos
+      { url: "/favicon.ico", sizes: "any" },
     ],
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
@@ -29,12 +29,11 @@ export const metadata: Metadata = {
       { rel: "icon", url: "/android-chrome-512x512.png", sizes: "512x512" },
     ],
   },
-  // Esto es para el color de la barra del navegador en móviles (el #ffffff del generador)
-  themeColor: "#ffffff", 
 };
-// export const viewport: Viewport = {
-//   themeColor: "#ffffff", 
-// };
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+};
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
