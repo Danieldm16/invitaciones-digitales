@@ -30,11 +30,11 @@ export const metadata: Metadata = {
     ],
   },
   // Esto es para el color de la barra del navegador en móviles (el #ffffff del generador)
-  //themeColor: "#ffffff", 
+  themeColor: "#ffffff", 
 };
-export const viewport: Viewport = {
-  themeColor: "#ffffff", // Pon aquí el color que prefieras para la barra del navegador
-};
+// export const viewport: Viewport = {
+//   themeColor: "#ffffff", 
+// };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
