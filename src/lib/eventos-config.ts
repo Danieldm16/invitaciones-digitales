@@ -1,8 +1,8 @@
 export const TEMAS = {
     CUMPLE: {
-        primario: "bg-blue-600",
-        acento: "text-blue-600",
-        boton: "bg-blue-600 hover:bg-blue-700 shadow-blue-200",
+        primario: "bg-indigo-600",
+        acento: "text-indigo-600",
+        boton: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200",
         fondo: "bg-slate-50",
         tarjeta: "bg-white",
         fuente: "font-sans",
@@ -10,67 +10,68 @@ export const TEMAS = {
     BODA_LUJO: {
         primario: "bg-[#b89b5e]",
         acento: "text-[#b89b5e]",
-        boton: "bg-[#b89b5e] text-white hover:bg-[#a68a4f] shadow-xl shadow-[#b89b5e]/20",
-        fondo: "bg-[#0c0d0c]", 
+        boton: "bg-[#b89b5e] text-white hover:bg-[#a68a4f] shadow-amber-900/20",
+        fondo: "bg-[#0c0d0c]",
         tarjeta: "bg-[#141514] border border-white/5",
-        fuente: "font-serif tracking-widest",
+        fuente: "font-serif",
     }
 };
 
 export const EVENTOS = {
     irma_cumple: {
+        tipo: "cumple",
         tema: TEMAS.CUMPLE,
         nombre: "Irma",
         titulo: "¡Mi cumple #28!",
-        frase: "Acompáñame a cantar y festejar.",
-        fecha: "Sábado 5 de Septiembre",
-        hora: "6:30 PM",
-        lugar: "Mi casa en Ramos",
+        frase: "Acompáñame a cantar, bailar y festejar la vida.",
+        fecha: "Sábado 21 de Noviembre",
+        fechaISO: "2026-11-21T19:30:00", // Fecha futura para que el reloj funcione
+        hora: "7:30 PM",
+        lugar: "Terraza Real",
         direccion: "Valle Verde 170, Real del Valle",
-        mapa: "https://www.google.com/maps?q=25.5421456,-100.9726649&z=17&hl=es",
+        mapa: "https://maps.google.com",
         wa_confirmar: "5218442995994",
-        foto_hero: "/eventos/cumple_irma/foto-irma.jpg",
-        id_supabase: "cumple-mateo-avanzado",
-        fechaISO: "2026-09-05T18:30:00", // <--- Para el reloj
-        mesa_regalos: "https://www.amazon.com.mx/hz/wishlist/ls/IAE016G6M4B3?ref_=wl_share",
-        musica_url: "https://www.bensound.com/bensound-music/bensound-happyrock.mp3",
+        foto_hero: "https://images.unsplash.com/photo-1517457373958-b7bdd4587205",
+        id_supabase: "cumple-irma-28",
+        mesa_regalos: "https://www.amazon.com.mx",
+        musica_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
         galeria: [
-            "https://images.unsplash.com/photo-1511795409834-ef04bbd61622",
-            "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
-            "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
-            "https://images.unsplash.com/photo-1583939003579-730e3918a45a"
-        ],
+            "https://images.unsplash.com/photo-1517457373958-b7bdd4587205",
+            "https://images.unsplash.com/photo-1530103862676-de8c9debad1d",
+            "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
+            "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4"
+        ]
     },
     "boda-ana-y-juan": {
+        tipo: "boda",
         tema: TEMAS.BODA_LUJO,
         nombre: "Ana & Juan",
         titulo: "Nuestra Boda",
-        frase: "Lo mejor de nuestras vidas está por comenzar",
-        fecha: "Sábado 20 de Diciembre",
-        fechaISO: "2025-12-20T18:00:00",
-        hora: "6:00 PM",
-        lugar: "Hacienda del Valle",
-        direccion: "Km 12 Carretera Nacional, Monterrey",
-        mapa: "https://maps.app.goo.gl/xxx",
+        frase: "Con nuestro amor, la presencia de Dios entre nosotros y la bendición de nuestros padres.",
+        fecha: "Sábado 24 de Octubre",
+        fechaISO: "2026-10-24T17:00:00", // Fecha futura alineada a Canva
+        hora: "5:00 PM",
+        lugar: "San Nicolás de Tolentino",
+        direccion: "Ramos Arizpe, Coahuila",
+        mapa: "https://maps.google.com",
         wa_confirmar: "528110000000",
         foto_hero: "https://images.unsplash.com/photo-1519741497674-611481863552",
         mesa_regalos: "https://amazon.com.mx",
-        id_supabase: "boda-ana-juan-2025",
+        id_supabase: "boda-ana-juan-2026",
         musica_url: "/musica/cancion_bodas.mp3",
-        
-        // --- CAMPOS EXCLUSIVOS PARA EL AVANZADO ---
-        dressCode: "Gala - Smoking & Vestido Largo",
-        itinerario: [
-            { h: "18:00", a: "Ceremonia Religiosa" },
-            { h: "19:30", a: "Cóctel de Bienvenida" },
-            { h: "21:00", a: "Banquete y Fiesta" },
-            { h: "02:00", a: "Fin del Evento" }
-        ],
+        dressCode: "FORMAL",
         galeria: [
-            "https://images.unsplash.com/photo-1511795409834-ef04bbd61622",
-            "https://images.unsplash.com/photo-1519225421980-715cb0215aed",
+            "https://images.unsplash.com/photo-1519741497674-611481863552",
+            "https://images.unsplash.com/photo-1583939003579-730e3918a45a",
+            "https://images.unsplash.com/photo-1511285560929-80b456fea0bc",
             "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
-            "https://images.unsplash.com/photo-1583939003579-730e3918a45a"
+            "https://images.unsplash.com/photo-1545232979-8bf68ee9b1af",
+            "https://images.unsplash.com/photo-1469371670807-013ccf25f16a"
         ],
+        itinerario: [
+            { h: "5:00 PM", a: "Ceremonia Religiosa - San Nicolás de Tolentino" },
+            { h: "7:00 PM", a: "Recepción y Banquete - Hacienda del Valle" },
+            { h: "02:00 AM", a: "Fin del Evento" }
+        ]
     }
 };
