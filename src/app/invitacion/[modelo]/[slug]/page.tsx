@@ -1186,7 +1186,7 @@ const LayoutAvanzado = ({
                       cupoExcedido || totalAsistentes === 0 ? "bg-stone-800 text-stone-500 cursor-not-allowed" : "bg-gradient-to-r from-[#C5A880] via-[#D4AF37] to-[#B89B5E] text-black hover:opacity-95"
                     }`}
                   >
-                    {loading ? "Registrando..." : "Confirmar Mi Lugar en Supabase"}
+                    {loading ? "Registrando..." : "Confirmar Mi Lugar"}
                   </button>
                 </form>
               ) : (
