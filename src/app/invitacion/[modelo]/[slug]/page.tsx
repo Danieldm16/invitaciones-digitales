@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import { CalendarPlus, MessageCircle, Sparkles, PartyPopper, Music2, CheckCircle2 } from 'lucide-react';
 
 // 1. Configuraciones y Estilos
 import { EVENTOS, ESTILOS } from '@/lib/eventos-config';
+import { supabase } from '@/lib/supabase';
 
-// 2. Importamos nuestros Legos modulares
+// 2. Componentes modulares
 import { PuertasGala, SobreModal } from '@/components/invitacion/Aperturas';
 import { CuentaRegresiva } from '@/components/invitacion/CuentaRegresiva';
 import { ReproductorMusica } from '@/components/invitacion/ReproductorMusica';
@@ -60,6 +61,7 @@ const LayoutModerado = ({ data }: { data: any }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const esBoda = data.tipo === "boda";
+  const encabezadoFestejo = esBoda ? "¡Nos Casamos!" : data.tipo === "xv" ? "¡Mis XV Años!" : "¡Festejemos!";
 
   const abrirSobre = () => {
     setSobreAbierto(true);
@@ -81,7 +83,7 @@ const LayoutModerado = ({ data }: { data: any }) => {
   const mensajeWhatsApp = encodeURIComponent(
     esBoda
       ? `¡Hola! Confirmo con mucho gusto mi asistencia a la boda de ${data.nombre} 💍✨`
-      : `¡Hola ${data.nombre}! Confirmo mi asistencia a tu fiesta 🎉🎂`
+      : `¡Hola ${data.nombre}! Confirmo mi asistencia a tu evento 🎉`
   );
 
   // Cumpleaños Moderado
@@ -117,7 +119,7 @@ const LayoutModerado = ({ data }: { data: any }) => {
     );
   }
 
-  // Boda Moderada (Papelería Crema)
+  // Boda / Evento Elegante Moderado
   return (
     <div className="min-h-screen bg-[#F7F4EE] text-[#33302C] flex justify-center py-0 md:py-8 px-0 md:px-4 font-serif antialiased selection:bg-[#C5A880] selection:text-white relative">
       <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={false} />
@@ -135,38 +137,38 @@ const LayoutModerado = ({ data }: { data: any }) => {
           </div>
           <div className="w-full -mt-10 pt-12 pb-6 px-6 bg-[#E3D4B6] rounded-2xl shadow-lg border border-[#D1BE99] text-center relative z-10">
             <h1 className="text-4xl md:text-5xl italic text-[#3F372C] leading-none">{data.nombre}</h1>
-            <p className="text-[10px] uppercase tracking-[0.35em] text-[#73634B] mt-3 font-sans font-medium">Nuestra Boda</p>
+            {/* Título dinámico en lugar de "Nuestra Boda" */}
+            <p className="text-[10px] uppercase tracking-[0.35em] text-[#73634B] mt-3 font-sans font-medium">
+              {data.titulo}
+            </p>
           </div>
         </header>
 
-        {/* Barra de audio */}
         <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={true} />
 
-        {/* Tarjeta Nos Casamos */}
+        {/* Tarjeta con encabezado dinámico */}
         <section className="px-6 py-6">
           <div className="relative bg-white rounded-2xl p-8 pt-12 shadow-md border-2 border-[#D4AF37]/35 text-center space-y-6">
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-[#E2B755] via-[#C99C35] to-[#997316] shadow-md border-2 border-white flex items-center justify-center">
               <span className="text-white text-lg">⚜</span>
             </div>
-            <h2 className="text-4xl italic text-[#2E2820]">¡Nos Casamos!</h2>
+            <h2 className="text-4xl italic text-[#2E2820]">{encabezadoFestejo}</h2>
             <p className="text-[11px] leading-relaxed uppercase tracking-[0.18em] text-[#696156] font-sans font-light px-2">"{data.frase}"</p>
             <div className="py-6 border-y border-[#EBE4D8] space-y-2">
-              <p className="text-sm tracking-[0.3em] uppercase text-[#85796A] font-sans font-medium">Fecha Especial</p>
-              <div className="flex items-center justify-center gap-6 text-[#2E2820]">
-                <span className="text-2xl font-serif">{data.fecha}</span>
+              <div className="flex items-center justify-center gap-4 text-[#2E2820]">
+                <span className="text-2xl font-serif font-light">{data.fecha}</span>
               </div>
               <p className="text-[11px] tracking-[0.2em] uppercase text-[#8F867A] pt-1 font-sans">{data.direccion}</p>
             </div>
           </div>
         </section>
 
-        {/* Componentes modulares */}
         <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={false} />
         <GaleriaLookbook fotos={data.galeria} esOscuro={false} permitirZoom={false} />
-        <ItinerarioSeccion data={data} esOscuro={false} />
-        <DressCodeSeccion dressCode={data.dressCode} esOscuro={false} conPaleta={false} />
+        <ItinerarioSeccion itinerario={data.itinerario} lugar={data.lugar} mapa={data.mapa} esOscuro={false} />
+        <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={false} conPaleta={false} />
 
-        {/* Botón WhatsApp */}
+        {/* Confirmación WhatsApp */}
         <section className="px-6 pt-6 pb-20">
           <a
             href={`https://wa.me/${data.wa_confirmar}?text=${mensajeWhatsApp}`}
@@ -202,6 +204,7 @@ const LayoutAvanzado = ({
 
   const esBoda = data.tipo === "boda";
   const esOscuro = estiloActivo.modoOscuro;
+  const encabezadoFestejo = esBoda ? "¡Nos Casamos!" : data.tipo === "xv" ? "¡Mis XV Años!" : "¡Festejemos Juntos!";
 
   const abrirInvitacion = () => {
     setAperturaCompletada(true);
@@ -223,10 +226,8 @@ const LayoutAvanzado = ({
   };
 
   const enlaceGoogleCalendar = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-    `Boda de ${data.nombre}`
-  )}&dates=20261024T170000/20261025T020000&details=${encodeURIComponent(
-    data.frase
-  )}&location=${encodeURIComponent(`${data.lugar}, ${data.direccion}`)}`;
+    `${data.titulo} - ${data.nombre}`
+  )}&details=${encodeURIComponent(data.frase || "")}&location=${encodeURIComponent(`${data.lugar || ""}, ${data.direccion || ""}`)}`;
 
   // Cumpleaños Avanzado (Fiesta VIP)
   if (!esBoda) {
@@ -241,8 +242,8 @@ const LayoutAvanzado = ({
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#A78BFA] text-[11px] font-bold tracking-widest uppercase">
               <Sparkles size={14} /> Fiesta VIP Exclusiva
             </div>
-            <h1 className="text-6xl font-black tracking-tight text-white drop-shadow-2xl">{data.titulo}</h1>
-            <p className="text-2xl font-light text-[#C4B5FD] tracking-wide">{data.nombre}</p>
+            <h1 className="text-6xl font-black tracking-tight text-white drop-shadow-2xl">{data.nombre}</h1>
+            <p className="text-2xl font-light text-[#C4B5FD] tracking-wide">{data.titulo}</p>
             <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent mx-auto" />
             <p className="text-sm font-semibold tracking-widest uppercase text-white/80">{data.fecha} • {data.hora}</p>
           </div>
@@ -258,6 +259,8 @@ const LayoutAvanzado = ({
           </div>
 
           <CuentaRegresiva fechaISO={data.fechaISO} variante="fiesta" />
+          <GaleriaLookbook fotos={data.galeria} permitirZoom={true} />
+          <ItinerarioSeccion itinerario={data.itinerario} lugar={data.lugar} mapa={data.mapa} esOscuro={true} />
 
           <div className="text-center space-y-5">
             <p className="italic text-base text-[#D1D5DB] px-4">"{data.frase}"</p>
@@ -272,12 +275,11 @@ const LayoutAvanzado = ({
     );
   }
 
-  // Boda Avanzada (Crema vs Black Tie)
+  // Boda / Evento Avanzado (Crema vs Black Tie)
   return (
     <div className={`min-h-screen ${esOscuro ? "bg-[#080808]" : "bg-[#F7F4EE]"} flex justify-center py-0 md:py-8 px-0 md:px-4 font-serif antialiased selection:bg-[#C5A880] selection:text-white relative`}>
       <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} esOscuro={esOscuro} mostrarBarra={false} />
 
-      {/* 1. APERTURA */}
       <AnimatePresence mode="wait">
         {!aperturaCompletada && (
           esOscuro ? (
@@ -288,43 +290,37 @@ const LayoutAvanzado = ({
         )}
       </AnimatePresence>
 
-      {/* 2. CONTENEDOR CENTRAL */}
       <main className={`w-full max-w-md ${esOscuro ? "bg-[#121110] border-[#C5A880]/30 text-[#F3EFE6]" : "bg-[#FAF8F5] border-[#EBE4D8] text-[#33302C]"} min-h-screen shadow-2xl relative border-x overflow-hidden`}>
-        
-        {/* Cabecera */}
         <header className={`relative pt-10 px-6 pb-6 flex flex-col items-center ${esOscuro ? "bg-gradient-to-b from-[#1C1A17] to-[#121110]" : "bg-gradient-to-b from-[#EFE8DA] to-[#FAF8F5]"}`}>
           <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${esOscuro ? "border-[#222] bg-[#141414]" : "border-white bg-white"}`}>
             <img src={data.foto_hero} alt={data.nombre} className="w-full h-full object-cover" />
           </div>
           <div className={`w-full -mt-10 pt-12 pb-6 px-6 ${esOscuro ? "bg-[#1E1B17] border-[#C5A880]/30 text-[#FAF8F5]" : "bg-[#E3D4B6] border-[#D1BE99] text-[#3F372C]"} rounded-2xl shadow-lg border text-center relative z-10`}>
             <h1 className="text-4xl md:text-5xl italic leading-none">{data.nombre}</h1>
+            {/* Título dinámico en lugar de "Nuestra Boda" */}
             <p className={`text-[10px] uppercase tracking-[0.35em] ${esOscuro ? "text-[#D4AF37]" : "text-[#73634B]"} mt-3 font-sans font-medium`}>
-              Nuestra Boda
+              {data.titulo}
             </p>
           </div>
         </header>
 
-        {/* Reproductor de Música */}
         <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} esOscuro={esOscuro} mostrarBarra={true} />
 
-        {/* Tarjeta "¡Nos Casamos!" */}
+        {/* Tarjeta dinámica */}
         <section className="px-6 py-6">
           <div className={`relative ${esOscuro ? "bg-[#181614] border-[#D4AF37]/35" : "bg-white border-[#D4AF37]/35"} rounded-2xl p-8 pt-12 shadow-md border-2 text-center space-y-6`}>
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-[#E2B755] via-[#C99C35] to-[#997316] shadow-md border-2 border-white flex items-center justify-center">
               <span className="text-white text-lg">⚜</span>
             </div>
 
-            <h2 className={`text-4xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>¡Nos Casamos!</h2>
+            <h2 className={`text-4xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>{encabezadoFestejo}</h2>
             <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] ${esOscuro ? "text-[#D9CEBA]" : "text-[#696156]"} font-sans font-light px-2`}>
               "{data.frase}"
             </p>
 
             <div className={`py-6 border-y ${esOscuro ? "border-[#C5A880]/20" : "border-[#EBE4D8]"} space-y-2`}>
-              <p className={`text-sm tracking-[0.3em] uppercase ${esOscuro ? "text-[#D4AF37]" : "text-[#85796A]"} font-sans font-medium`}>
-                Fecha
-              </p>
-              <div className={`flex items-center justify-center gap-6 ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>
-                <span className="text-3xl font-serif">{data.fecha}</span>
+              <div className="flex items-center justify-center gap-4 text-[#2E2820]">
+                <span className={`text-2xl font-serif ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>{data.fecha}</span>
               </div>
               <p className={`text-[11px] tracking-[0.2em] uppercase ${esOscuro ? "text-[#A89F91]" : "text-[#8F867A]"} pt-1 font-sans`}>
                 {data.direccion}
@@ -342,11 +338,10 @@ const LayoutAvanzado = ({
           </div>
         </section>
 
-        {/* Componentes modulares ensamblados */}
         <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={esOscuro} />
         <GaleriaLookbook fotos={data.galeria} esOscuro={esOscuro} permitirZoom={true} />
-        <ItinerarioSeccion data={data} esOscuro={esOscuro} />
-        <DressCodeSeccion dressCode={data.dressCode} esOscuro={esOscuro} conPaleta={true} />
+        <ItinerarioSeccion itinerario={data.itinerario} lugar={data.lugar} mapa={data.mapa} esOscuro={esOscuro} />
+        <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={esOscuro} conPaleta={true} />
 
         {/* Regalos */}
         <section className="px-6 py-4">
@@ -361,7 +356,6 @@ const LayoutAvanzado = ({
           </div>
         </section>
 
-        {/* Formulario RSVP conectado a Supabase */}
         <FormularioRSVP idSupabase={data.id_supabase} pasesTotales={pasesTotales} nombreInvitado={nombreInvitado} esOscuro={esOscuro} />
       </main>
     </div>
@@ -381,28 +375,76 @@ function InvitacionDinamica() {
   const invitado = searchParams.get('invitado') || '';
   const estiloParam = searchParams.get('estilo');
 
-  // @ts-ignore
-  const data = EVENTOS[slug];
+  const [eventoData, setEventoData] = useState<any>(null);
+  const [cargando, setCargando] = useState(true);
 
-  if (!data) {
+  useEffect(() => {
+    async function obtenerEvento() {
+      setCargando(true);
+      const { data: dbData } = await supabase
+        .from('eventos')
+        .select('*')
+        .eq('slug', slug)
+        .eq('activo', true)
+        .single();
+
+      if (dbData) {
+        setEventoData({
+          ...dbData,
+          fechaISO: dbData.fecha_iso,
+          wa_confirmar: dbData.wa_confirmar,
+          foto_hero: dbData.foto_hero,
+          mesa_regalos: dbData.mesa_regalos,
+          musica_url: dbData.musica_url,
+          dressCode: dbData.dress_code,
+          nota_dress_code: dbData.nota_dress_code,
+          itinerario: dbData.itinerario || [],
+          galeria: dbData.galeria || []
+        });
+      } else {
+        // @ts-ignore
+        setEventoData(EVENTOS[slug] || null);
+      }
+      setCargando(false);
+    }
+
+    if (slug) obtenerEvento();
+  }, [slug]);
+
+  // Actualiza el título de la pestaña del navegador automáticamente
+  useEffect(() => {
+    if (eventoData) {
+      document.title = `${eventoData.nombre} • ${eventoData.titulo || "Invitación"} | Nuestra Invitación`;
+    }
+  }, [eventoData]);
+
+  if (cargando) {
+    return (
+      <div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center font-serif text-sm text-[#73634B]">
+        Cargando invitación...
+      </div>
+    );
+  }
+
+  if (!eventoData) {
     return (
       <div className="p-20 text-center font-bold text-red-500 bg-black min-h-screen flex items-center justify-center font-sans">
-        Error: Invitación no encontrada. Revisa el slug en la URL.
+        Error: Invitación no encontrada o inactiva.
       </div>
     );
   }
 
   const estiloActivo = (estiloParam && ESTILOS[estiloParam as keyof typeof ESTILOS]) 
     ? ESTILOS[estiloParam as keyof typeof ESTILOS] 
-    : (data.tema || (data.estiloVisual && ESTILOS[data.estiloVisual as keyof typeof ESTILOS]) || ESTILOS.crema_lujo);
+    : (eventoData.tema || (eventoData.estilo_visual && ESTILOS[eventoData.estilo_visual as keyof typeof ESTILOS]) || ESTILOS.crema_lujo);
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center font-serif">Cargando invitación...</div>}>
-      {modelo === 'basica' && <LayoutBasico data={data} />}
-      {modelo === 'moderada' && <LayoutModerado data={data} />}
+      {modelo === 'basica' && <LayoutBasico data={eventoData} />}
+      {modelo === 'moderada' && <LayoutModerado data={eventoData} />}
       {modelo === 'avanzada' && (
         <LayoutAvanzado 
-          data={data} 
+          data={eventoData} 
           pasesTotales={pases} 
           nombreInvitado={invitado} 
           estiloActivo={estiloActivo}

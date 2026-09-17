@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Music2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 export const FormularioRSVP = ({ 
   idSupabase, 
@@ -53,7 +54,7 @@ export const FormularioRSVP = ({
       setEnviado(true);
     } else {
       console.error("Error al registrar en Supabase:", error);
-      alert("Hubo un error al registrar la confirmación.");
+      toast.error("Hubo un problema de conexión al registrar tu asistencia. Intenta de nuevo.");
     }
     setLoading(false);
   };
