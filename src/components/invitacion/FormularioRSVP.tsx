@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Music2, CheckCircle2 } from 'lucide-react';
+import { Users, Music2, CheckCircle2, Ticket, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 
@@ -20,6 +20,7 @@ export const FormularioRSVP = ({
   const [adultos, setAdultos] = useState(Math.min(2, pasesTotales));
   const [ninos, setNinos] = useState(0);
   const [enviado, setEnviado] = useState(false);
+  const [paseId, setPaseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorCupo, setErrorCupo] = useState("");
 
@@ -48,10 +49,17 @@ export const FormularioRSVP = ({
       evento: idSupabase
     };
 
-    const { error } = await supabase.from('confirmaciones').insert([payload]);
+    // Guardamos y recuperamos el ID generado
+    const { data, error } = await supabase
+      .from('confirmaciones')
+      .insert([payload])
+      .select('id')
+      .single();
 
-    if (!error) {
+    if (!error && data) {
+      setPaseId(data.id);
       setEnviado(true);
+      toast.success("¡Asistencia confirmada con éxito!");
     } else {
       console.error("Error al registrar en Supabase:", error);
       toast.error("Hubo un problema de conexión al registrar tu asistencia. Intenta de nuevo.");
@@ -78,7 +86,7 @@ export const FormularioRSVP = ({
             <form onSubmit={handleRSVP} className="space-y-5 pt-2">
               <div className="space-y-1">
                 <label className={`text-[10px] uppercase tracking-[0.2em] font-sans font-bold ${esOscuro ? "text-[#C5A880]" : "text-[#7A7267]"}`}>
-                  Nombre completo *
+                  Nombre completo o Familia *
                 </label>
                 <input
                   required
@@ -173,14 +181,36 @@ export const FormularioRSVP = ({
               </p>
             </form>
           ) : (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="py-10 text-center space-y-4">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="py-8 text-center space-y-5">
               <div className="w-16 h-16 mx-auto rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border-2 border-emerald-200 shadow-sm">
                 <CheckCircle2 size={36} />
               </div>
-              <h4 className={`text-3xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>¡Confirmación Recibida!</h4>
-              <p className={`text-xs ${esOscuro ? "text-[#D9CEBA]" : "text-[#7A7267]"} font-sans max-w-xs mx-auto leading-relaxed`}>
-                Hemos registrado tu asistencia con éxito en la lista oficial de los novios. ¡Nos vemos en la boda!
-              </p>
+              <div className="space-y-1">
+                <h4 className={`text-3xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>¡Lugar Confirmado!</h4>
+                <p className={`text-xs ${esOscuro ? "text-[#D9CEBA]" : "text-[#7A7267]"} font-sans max-w-xs mx-auto leading-relaxed`}>
+                  Hemos reservado tus lugares. Ya puedes consultar y guardar tu pase de acceso oficial para el evento.
+                </p>
+              </div>
+
+              {/* BOTÓN PARA ABRIR SU PASE DIGITAL */}
+              {paseId && (
+                <div className="pt-3">
+                  <a
+                    href={`/pase/${paseId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`inline-flex items-center justify-center gap-2 w-full py-4 px-6 rounded-2xl text-xs font-bold uppercase tracking-widest transition-all shadow-lg active:scale-95 ${
+                      esOscuro
+                        ? "bg-[#D4AF37] text-black hover:bg-[#C5A880] shadow-[0_0_25px_rgba(212,175,55,0.3)]"
+                        : "bg-[#2E2820] hover:bg-black text-white"
+                    }`}
+                  >
+                    <Ticket size={16} />
+                    <span>Ver Mi Pase Digital</span>
+                    <ArrowRight size={14} />
+                  </a>
+                </div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

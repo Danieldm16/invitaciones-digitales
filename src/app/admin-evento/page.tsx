@@ -159,6 +159,17 @@ function AdminContent() {
     document.body.removeChild(link);
   };
 
+  const actualizarMesaInvitado = async (id: string, nuevaMesa: string) => {
+    const { error } = await supabase
+      .from('confirmaciones')
+      .update({ mesa: nuevaMesa.trim() })
+      .eq('id', id);
+
+    if (!error) {
+      setConfirmados(prev => prev.map(inv => inv.id === id ? { ...inv, mesa: nuevaMesa.trim() } : inv));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-[#2E2820] p-4 md:p-10 font-sans antialiased">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -348,6 +359,7 @@ function AdminContent() {
                 <tr className="bg-[#FAF9F6] border-y border-[#EAE4D9] text-[10px] uppercase tracking-wider font-bold text-[#8A8177]">
                   <th className="p-4">Invitado / Familia</th>
                   <th className="p-4 text-center">Lugares</th>
+                  <th className="p-4 text-center">Mesa Asignada</th>
                   <th className="p-4">Menú Especial / Alergias / Canción</th>
                   <th className="p-4 text-right">Fecha Registro</th>
                 </tr>
@@ -367,6 +379,16 @@ function AdminContent() {
                       </span>
                     </td>
 
+                    {/* CAMPO EDITABLE DE MESA EN TIEMPO REAL */}
+                    <td className="p-4 text-center">
+                      <input
+                        defaultValue={inv.mesa || ""}
+                        onBlur={(e) => actualizarMesaInvitado(inv.id, e.target.value)}
+                        placeholder="Ej: Mesa 4"
+                        className="w-24 px-2.5 py-1.5 text-center text-xs font-bold bg-[#FAF9F6] border border-[#EAE4D9] rounded-xl outline-none focus:border-[#D4A39E] text-[#2E2820]"
+                      />
+                    </td>
+
                     <td className="p-4 text-xs text-[#554E45] max-w-sm">
                       {inv.alergias ? (
                         <span className="inline-block bg-[#FAF6EE] border border-[#E5D7C0] text-[#7A623A] px-2.5 py-1 rounded-lg">
@@ -377,8 +399,18 @@ function AdminContent() {
                       )}
                     </td>
 
-                    <td className="p-4 text-right text-xs text-[#8A8177] font-mono">
-                      {inv.created_at ? new Date(inv.created_at).toLocaleDateString() : 'Reciente'}
+                    {/* BOTÓN PARA VER / REENVIAR PASE */}
+                    <td className="p-4 text-right">
+                      <a
+                        href={`/pase/${inv.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#FAF9F6] hover:bg-[#FAF4F0] border border-[#EAE4D9] text-[#554E45] hover:text-[#D4A39E] rounded-xl text-xs font-bold transition-colors"
+                        title="Ver Pase Digital"
+                      >
+                        <span>Pase</span>
+                        <span className="text-[10px]">↗</span>
+                      </a>
                     </td>
                   </tr>
                 ))}

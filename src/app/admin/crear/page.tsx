@@ -8,6 +8,7 @@ import {
   ArrowLeft, Upload, Sparkles, Plus, Trash2, Image as ImageIcon 
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { ESTILOS } from '@/lib/eventos-config';
 
 const EMOJIS_ITINERARIO = ["⛪", "💍", "🥂", "🍽️", "🎂", "💃", "👑", "📸", "🕊️", "✨"];
 
@@ -233,9 +234,12 @@ export default function CrearInvitacionPage() {
                   onChange={(e) => setEstiloVisual(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] cursor-pointer"
                 >
-                  <option value="crema_lujo">📜 Crema Artesanal</option>
-                  <option value="black_tie">🖤 Black Tie (Gala)</option>
-                  <option value="fiesta_vip">💜 Fiesta VIP (Neón)</option>
+                  {/* Lee todos los estilos que Alan haya creado automáticamente: */}
+                  {Object.values(ESTILOS).map((estilo: any) => (
+                    <option key={estilo.id} value={estilo.id}>
+                      {estilo.nombreVisible || estilo.id}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
