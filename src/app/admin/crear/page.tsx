@@ -4,11 +4,12 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { 
-  ArrowLeft, Upload, Sparkles, Plus, Trash2, Image as ImageIcon 
-} from 'lucide-react';
-import { toast } from 'sonner';
 import { ESTILOS } from '@/lib/eventos-config';
+import { toast } from 'sonner';
+import { 
+  ArrowLeft, Upload, Sparkles, Plus, Trash2, 
+  Image as ImageIcon, MessageCircle, CreditCard 
+} from 'lucide-react';
 
 const EMOJIS_ITINERARIO = ["⛪", "💍", "🥂", "🍽️", "🎂", "💃", "👑", "📸", "🕊️", "✨"];
 
@@ -17,6 +18,7 @@ export default function CrearInvitacionPage() {
   const [loading, setLoading] = useState(false);
   const [progreso, setProgreso] = useState("");
 
+  // Estados del Formulario
   const [slug, setSlug] = useState("");
   const [plan, setPlan] = useState("avanzada");
   const [tipo, setTipo] = useState("boda");
@@ -30,18 +32,28 @@ export default function CrearInvitacionPage() {
   const [lugar, setLugar] = useState("");
   const [direccion, setDireccion] = useState("");
   const [mapa, setMapa] = useState("");
+  
+  // WhatsApp y Confirmaciones
   const [waConfirmar, setWaConfirmar] = useState("");
+  const [fechaLimiteRsvp, setFechaLimiteRsvp] = useState("");
+
+  // Regalos
   const [mesaRegalos, setMesaRegalos] = useState("");
+  // const [datosBancarios, setDatosBancarios] = useState("");
   const [musicaUrl, setMusicaUrl] = useState("");
+
+  // Vestimenta
   const [dressCode, setDressCode] = useState("FORMAL");
   const [notaDressCode, setNotaDressCode] = useState("Por favor, evitar asistir de color blanco, beige o marfil (reservados para la novia).");
 
+  // Archivos
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [galeriaFiles, setGaleriaFiles] = useState<File[]>([]);
 
-  const [itinerario, setItinerario] = useState<{ h: string; a: string; icon: string }[]>([
-    { h: "5:00 PM", a: "Ceremonia Religiosa", icon: "⛪" },
-    { h: "7:00 PM", a: "Recepción y Banquete", icon: "🥂" }
+  // Itinerario dinámico con lugar y mapa por actividad
+  const [itinerario, setItinerario] = useState<{ h: string; a: string; icon: string; lugar: string; mapa: string }[]>([
+    { h: "5:00 PM", a: "Ceremonia Religiosa", icon: "⛪", lugar: "Parroquia San Pedro", mapa: "" },
+    { h: "7:00 PM", a: "Recepción y Banquete", icon: "🥂", lugar: "Hacienda del Valle", mapa: "" }
   ]);
 
   const handleNombreChange = (val: string) => {
@@ -57,7 +69,7 @@ export default function CrearInvitacionPage() {
   };
 
   const agregarFilaItinerario = () => {
-    setItinerario([...itinerario, { h: "", a: "", icon: "✨" }]);
+    setItinerario([...itinerario, { h: "", a: "", icon: "✨", lugar: "", mapa: "" }]);
   };
 
   const eliminarFilaItinerario = (index: number) => {
@@ -192,8 +204,8 @@ export default function CrearInvitacionPage() {
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] font-semibold text-[#D4A39E] cursor-pointer"
                 >
                   <option value="avanzada">Avanzada ($1,490)</option>
-                  <option value="moderada">Moderada ($950)</option>
-                  <option value="basica">Básica ($590)</option>
+                  <option value="moderada">Moderada ($790)</option>
+                  <option value="basica">Básica ($390)</option>
                 </select>
               </div>
 
@@ -234,10 +246,9 @@ export default function CrearInvitacionPage() {
                   onChange={(e) => setEstiloVisual(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] cursor-pointer"
                 >
-                  {/* Lee todos los estilos que Alan haya creado automáticamente: */}
-                  {Object.values(ESTILOS).map((estilo: any) => (
-                    <option key={estilo.id} value={estilo.id}>
-                      {estilo.nombreVisible || estilo.id}
+                  {Object.values(ESTILOS).map((est: any) => (
+                    <option key={est.id} value={est.id}>
+                      {est.nombreVisible || est.id}
                     </option>
                   ))}
                 </select>
@@ -284,9 +295,9 @@ export default function CrearInvitacionPage() {
             </div>
           </div>
 
-          {/* 3. FECHAS Y UBICACIÓN */}
+          {/* 3. FECHAS Y UBICACIÓN GENERAL */}
           <div className="space-y-4">
-            <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">3. Fechas y Ubicación</h2>
+            <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">3. Fechas y Ubicación Principal</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -301,7 +312,7 @@ export default function CrearInvitacionPage() {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Hora</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Hora Principal</label>
                 <input
                   value={hora}
                   onChange={(e) => setHora(e.target.value)}
@@ -311,7 +322,7 @@ export default function CrearInvitacionPage() {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Fecha Reloj (Cuenta Regresiva)</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Fecha y Hora Reloj (Cuenta Regresiva)</label>
                 <input
                   type="datetime-local"
                   value={fechaIso}
@@ -321,31 +332,29 @@ export default function CrearInvitacionPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Lugar / Salón</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Lugar Principal / Salón</label>
                 <input
                   value={lugar}
                   onChange={(e) => setLugar(e.target.value)}
-                  placeholder="ej: Parroquia San Pedro / Hacienda San José"
+                  placeholder="ej: Hacienda San José"
                   className="w-full px-3.5 py-2.5 border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E]"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Dirección Completa</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Dirección General</label>
                 <input
                   value={direccion}
                   onChange={(e) => setDireccion(e.target.value)}
-                  placeholder="ej: Av. Hidalgo #123, Saltillo"
+                  placeholder="ej: Carretera Nacional Km 12"
                   className="w-full px-3.5 py-2.5 border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E]"
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Link de Google Maps</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Link de Google Maps General</label>
                 <input
                   value={mapa}
                   onChange={(e) => setMapa(e.target.value)}
@@ -353,22 +362,32 @@ export default function CrearInvitacionPage() {
                   className="w-full px-3.5 py-2.5 border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E]"
                 />
               </div>
-
-              <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">WhatsApp para Confirmar (con lada)</label>
-                <input
-                  value={waConfirmar}
-                  onChange={(e) => setWaConfirmar(e.target.value)}
-                  placeholder="ej: 528441234567"
-                  className="w-full px-3.5 py-2.5 border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E]"
-                />
-              </div>
             </div>
           </div>
 
-          {/* 4. MULTIMEDIA */}
+          {/* 4. DESTINO DE CONFIRMACIONES WHATSAPP (CLAVE PARA BÁSICA Y MODERADA) */}
+          <div className="bg-[#F4F6F4] p-6 rounded-2xl border border-[#8E9B8E]/30 space-y-3">
+            <div className="flex items-center gap-2 text-[#4A5D4A]">
+              <MessageCircle size={18} />
+              <h2 className="text-xs font-bold uppercase tracking-wider">Confirmaciones por WhatsApp (Para Básica y Moderada)</h2>
+            </div>
+            <p className="text-[11px] text-[#556B55]">
+              A este número de WhatsApp llegarán los mensajes automáticos de los invitados cuando hagan clic en el botón de confirmar.
+            </p>
+            <div className="max-w-sm">
+              <label className="text-[11px] font-bold text-[#3E4D3E] block mb-1">Número de WhatsApp (con código de país sin +)</label>
+              <input
+                value={waConfirmar}
+                onChange={(e) => setWaConfirmar(e.target.value)}
+                placeholder="ej: 5218441234567"
+                className="w-full px-3.5 py-2.5 bg-white border border-[#8E9B8E]/40 rounded-xl text-xs outline-none focus:border-[#8E9B8E] font-mono text-[#2E2820]"
+              />
+            </div>
+          </div>
+
+          {/* 5. MULTIMEDIA & MESA DE REGALOS */}
           <div className="space-y-4">
-            <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">4. Fotos y Música</h2>
+            <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">5. Fotos, Música y Regalos</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-5 border-2 border-dashed border-[#EAE4D9] bg-[#FAF9F6]/60 rounded-2xl text-center space-y-2">
@@ -404,13 +423,13 @@ export default function CrearInvitacionPage() {
                 <input
                   value={musicaUrl}
                   onChange={(e) => setMusicaUrl(e.target.value)}
-                  placeholder="ej: /musica/cancion.mp3 o link directo"
+                  placeholder="ej: /musica/cancion.mp3 o URL externa"
                   className="w-full px-3.5 py-2.5 border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E]"
                 />
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Mesa de Regalos (Link)</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Mesa de Regalos (Link de tienda)</label>
                 <input
                   value={mesaRegalos}
                   onChange={(e) => setMesaRegalos(e.target.value)}
@@ -421,9 +440,9 @@ export default function CrearInvitacionPage() {
             </div>
           </div>
 
-          {/* 5. VESTIMENTA E ITINERARIO */}
+          {/* 6. VESTIMENTA E ITINERARIO CON LUGAR Y MAPA PROPIO */}
           <div className="space-y-4">
-            <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">5. Vestimenta e Itinerario</h2>
+            <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">6. Vestimenta e Itinerario con Lugares</h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -437,21 +456,23 @@ export default function CrearInvitacionPage() {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Nota o Advertencia (Opcional)</label>
+                <label className="text-[11px] font-bold text-[#554E45] block mb-1">Nota de Vestimenta (Opcional)</label>
                 <input
                   value={notaDressCode}
                   onChange={(e) => setNotaDressCode(e.target.value)}
-                  placeholder="ej: Evitar color blanco / Calzado cómodo"
+                  placeholder="ej: Evitar blanco / Calzado cómodo para jardín"
                   className="w-full px-3.5 py-2.5 border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E]"
                 />
-                <p className="text-[10px] text-[#A89F91] mt-1">Si queda vacío, la advertencia no se muestra.</p>
               </div>
             </div>
 
-            {/* Itinerario con Emojis */}
+            {/* Itinerario con lugar y mapa independiente */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-[#554E45]">Puntos del Itinerario</label>
+                <div>
+                  <label className="text-[11px] font-bold text-[#554E45]">Puntos del Itinerario</label>
+                  <p className="text-[10px] text-slate-400">Cada actividad puede tener su propio templo/salón y su propio enlace de Maps.</p>
+                </div>
                 <button
                   type="button"
                   onClick={agregarFilaItinerario}
@@ -462,66 +483,94 @@ export default function CrearInvitacionPage() {
               </div>
 
               {itinerario.map((item, index) => (
-                <div key={index} className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3.5 bg-[#FAF9F6] rounded-2xl border border-[#EAE4D9]">
-                  <div className="flex items-center gap-1.5 shrink-0">
+                <div key={index} className="p-4 bg-[#FAF9F6] rounded-2xl border border-[#EAE4D9] space-y-3">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    {/* Emoji */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <input
+                        value={item.icon || "✨"}
+                        onChange={(e) => {
+                          const copia = [...itinerario];
+                          copia[index].icon = e.target.value;
+                          setItinerario(copia);
+                        }}
+                        className="w-10 h-10 text-center text-xl bg-white border border-[#EAE4D9] rounded-xl outline-none"
+                      />
+                      <div className="flex items-center gap-1 overflow-x-auto max-w-[140px] p-1 bg-white border border-[#EAE4D9] rounded-xl">
+                        {EMOJIS_ITINERARIO.map((em) => (
+                          <button
+                            key={em}
+                            type="button"
+                            onClick={() => {
+                              const copia = [...itinerario];
+                              copia[index].icon = em;
+                              setItinerario(copia);
+                            }}
+                            className="hover:scale-125 transition-transform text-sm px-0.5 cursor-pointer"
+                          >
+                            {em}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <input
-                      value={item.icon || "✨"}
+                      value={item.h}
                       onChange={(e) => {
                         const copia = [...itinerario];
-                        copia[index].icon = e.target.value;
+                        copia[index].h = e.target.value;
                         setItinerario(copia);
                       }}
-                      className="w-10 h-10 text-center text-xl bg-white border border-[#EAE4D9] rounded-xl outline-none"
+                      placeholder="Hora (ej: 5:00 PM)"
+                      className="w-full sm:w-28 px-3 py-2 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none"
                     />
-                    <div className="flex items-center gap-1 overflow-x-auto max-w-[160px] p-1 bg-white border border-[#EAE4D9] rounded-xl">
-                      {EMOJIS_ITINERARIO.map((em) => (
-                        <button
-                          key={em}
-                          type="button"
-                          onClick={() => {
-                            const copia = [...itinerario];
-                            copia[index].icon = em;
-                            setItinerario(copia);
-                          }}
-                          className="hover:scale-125 transition-transform text-sm px-0.5 cursor-pointer"
-                        >
-                          {em}
-                        </button>
-                      ))}
-                    </div>
+
+                    <input
+                      value={item.a}
+                      onChange={(e) => {
+                        const copia = [...itinerario];
+                        copia[index].a = e.target.value;
+                        setItinerario(copia);
+                      }}
+                      placeholder="Actividad (ej: Ceremonia Religiosa)"
+                      className="flex-1 w-full px-3 py-2 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none"
+                    />
+
+                    {itinerario.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => eliminarFilaItinerario(index)}
+                        className="p-2 text-red-400 hover:text-red-600 transition-colors self-end sm:self-center cursor-pointer"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
 
-                  <input
-                    value={item.h}
-                    onChange={(e) => {
-                      const copia = [...itinerario];
-                      copia[index].h = e.target.value;
-                      setItinerario(copia);
-                    }}
-                    placeholder="Hora (ej: 5:00 PM)"
-                    className="w-full sm:w-28 px-3 py-2 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none"
-                  />
+                  {/* Lugar y Mapa PROPIO para esta actividad */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-[#EAE4D9]/60">
+                    <input
+                      value={item.lugar || ""}
+                      onChange={(e) => {
+                        const copia = [...itinerario];
+                        copia[index].lugar = e.target.value;
+                        setItinerario(copia);
+                      }}
+                      placeholder="Lugar específico (ej. Parroquia San Pedro)"
+                      className="w-full px-3 py-1.5 bg-white border border-[#EAE4D9] rounded-lg text-[11px] outline-none"
+                    />
 
-                  <input
-                    value={item.a}
-                    onChange={(e) => {
-                      const copia = [...itinerario];
-                      copia[index].a = e.target.value;
-                      setItinerario(copia);
-                    }}
-                    placeholder="Actividad (ej: Ceremonia Religiosa)"
-                    className="flex-1 w-full px-3 py-2 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none"
-                  />
-
-                  {itinerario.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => eliminarFilaItinerario(index)}
-                      className="p-2 text-red-400 hover:text-red-600 transition-colors self-end sm:self-center cursor-pointer"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  )}
+                    <input
+                      value={item.mapa || ""}
+                      onChange={(e) => {
+                        const copia = [...itinerario];
+                        copia[index].mapa = e.target.value;
+                        setItinerario(copia);
+                      }}
+                      placeholder="Link de Google Maps para este lugar"
+                      className="w-full px-3 py-1.5 bg-white border border-[#EAE4D9] rounded-lg text-[11px] outline-none font-mono"
+                    />
+                  </div>
                 </div>
               ))}
             </div>
