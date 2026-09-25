@@ -18,41 +18,129 @@ import { ItinerarioSeccion, DressCodeSeccion } from '@/components/invitacion/Det
 import { FormularioRSVP } from '@/components/invitacion/FormularioRSVP';
 
 // =========================================================================
-// 1. MOTOR BÁSICO ($590)
+// 1. MOTOR BÁSICO ($390 - Papelería Artesanal de Lujo, Sin Animaciones)
 // =========================================================================
-const LayoutBasico = ({ data }: { data: any }) => {
-  const tema = data.tema || ESTILOS.crema_lujo;
+const LayoutBasico = ({ data, estiloActivo }: { data: any, estiloActivo: any }) => {
+  const esOscuro = estiloActivo.modoOscuro;
+  const esBoda = data.tipo === "boda";
+  const encabezadoFestejo = esBoda ? "¡Nos Casamos!" : data.tipo === "xv" ? "¡Mis XV Años!" : "¡Festejemos Juntos!";
+
+  const mensajeWhatsApp = encodeURIComponent(
+    esBoda
+      ? `¡Hola! Confirmo con mucho gusto mi asistencia a la boda de ${data.nombre} 💍✨`
+      : `¡Hola ${data.nombre}! Confirmo mi asistencia a tu evento 🎉`
+  );
+
   return (
-    <div className={`min-h-screen ${tema.fondo} flex items-center justify-center p-4 ${tema.fuente}`}>
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 text-center text-slate-800">
-        <div className="h-64 relative">
-          <img src={data.foto_hero} className="w-full h-full object-cover" alt={data.nombre} />
-          <div className={`absolute bottom-0 left-0 right-0 h-1 ${tema.acentoBg} opacity-50`} />
-        </div>
-        <div className="p-8">
-          <h2 className={`text-xs uppercase tracking-[0.3em] ${tema.acento} font-bold mb-2`}>{data.titulo}</h2>
-          <h1 className="text-4xl font-black mb-4">{data.nombre}</h1>
-          <p className="text-slate-500 italic mb-8">"{data.frase}"</p>
-          <div className="bg-slate-50 p-6 rounded-2xl text-left space-y-3 mb-8 text-slate-600 border border-slate-100">
-            <p>📅 <strong>{data.fecha}</strong></p>
-            <p>📍 {data.lugar}</p>
+    <div className={`min-h-screen ${esOscuro ? "bg-[#080808] text-[#F3EFE6]" : "bg-[#F7F4EE] text-[#33302C]"} flex justify-center py-0 md:py-8 px-0 md:px-4 font-serif antialiased selection:bg-[#C5A880] selection:text-white`}>
+      <main className={`w-full max-w-md ${esOscuro ? "bg-[#121110] border-[#C5A880]/30" : "bg-[#FAF8F5] border-[#EBE4D8]"} min-h-screen shadow-2xl relative border-x overflow-hidden pb-16`}>
+        
+        {/* Cabecera con Foto Enmarcada */}
+        <header className={`relative pt-10 px-6 pb-6 flex flex-col items-center ${esOscuro ? "bg-gradient-to-b from-[#1C1A17] to-[#121110]" : "bg-gradient-to-b from-[#EFE8DA] to-[#FAF8F5]"}`}>
+          {data.foto_hero && (
+            <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${esOscuro ? "border-[#222] bg-[#141414]" : "border-white bg-white"}`}>
+              <img src={data.foto_hero} alt={data.nombre} className="w-full h-full object-cover" />
+            </div>
+          )}
+
+          <div className={`w-full ${data.foto_hero ? "-mt-10" : "mt-2"} pt-10 pb-6 px-6 ${esOscuro ? "bg-[#1E1B17] border-[#C5A880]/30 text-[#FAF8F5]" : "bg-[#E3D4B6] border-[#D1BE99] text-[#3F372C]"} rounded-2xl shadow-lg border text-center relative z-10 space-y-2`}>
+            <h1 className="text-4xl md:text-5xl italic leading-none">{data.nombre}</h1>
+            <p className={`text-[10px] uppercase tracking-[0.35em] ${esOscuro ? "text-[#D4AF37]" : "text-[#73634B]"} font-sans font-medium`}>
+              {data.titulo}
+            </p>
           </div>
-          <div className="space-y-3">
-            <a href={data.mapa} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#C5A880] text-white py-4 rounded-xl font-bold transition-all">
-              📍 Ver Mapa
-            </a>
-            <a href={`https://wa.me/${data.wa_confirmar}`} target="_blank" rel="noopener noreferrer" className="block w-full bg-[#25D366] text-white py-4 rounded-xl font-bold">
-              ✅ Confirmar WhatsApp
-            </a>
+        </header>
+
+        {/* Tarjeta Central de Detalles del Evento */}
+        <div className="px-6 py-4 space-y-6">
+          <div className={`relative ${esOscuro ? "bg-[#181614] border-[#D4AF37]/35" : "bg-white border-[#D4AF37]/35"} rounded-3xl p-8 pt-12 shadow-md border-2 text-center space-y-6`}>
+            
+            {/* Medallón Decorativo con Sello */}
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-[#E2B755] via-[#C99C35] to-[#997316] shadow-md border-2 border-white flex items-center justify-center">
+              <span className="text-white text-lg">⚜</span>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className={`text-4xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>{encabezadoFestejo}</h2>
+              {data.frase && (
+                <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] ${esOscuro ? "text-[#D9CEBA]" : "text-[#696156]"} font-sans font-light px-2`}>
+                  "{data.frase}"
+                </p>
+              )}
+            </div>
+
+            {/* Fecha y Dirección */}
+            <div className={`py-6 border-y ${esOscuro ? "border-[#C5A880]/20" : "border-[#EBE4D8]"} space-y-3`}>
+              <div className="space-y-1">
+                <span className={`text-[10px] uppercase tracking-[0.3em] ${esOscuro ? "text-[#D4AF37]" : "text-[#85796A]"} font-sans font-bold block`}>
+                  Fecha
+                </span>
+                <p className={`text-3xl font-serif font-light ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>
+                  {data.fecha}
+                </p>
+                {data.hora && (
+                  <p className={`text-xs uppercase tracking-widest font-sans font-semibold ${esOscuro ? "text-[#D4AF37]" : "text-[#7A623A]"}`}>
+                    {data.hora}
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-[#EAE4D9]/40 space-y-0.5">
+                <p className={`font-bold text-base ${esOscuro ? "text-white" : "text-[#2E2820]"}`}>{data.lugar}</p>
+                {data.direccion && (
+                  <p className={`text-[11px] tracking-wide ${esOscuro ? "text-[#A89F91]" : "text-[#8F867A]"} font-sans`}>
+                    {data.direccion}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Botón de Google Maps */}
+            {data.mapa && (
+              <div>
+                <a
+                  href={data.mapa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center gap-2 px-8 py-3 rounded-full border ${
+                    esOscuro 
+                      ? "border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black" 
+                      : "border-[#C5A880] text-[#7A623A] hover:bg-[#C5A880] hover:text-white"
+                  } text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-all shadow-xs`}
+                >
+                  📍 Abrir en Google Maps
+                </a>
+              </div>
+            )}
+
           </div>
+
+          {/* Botón de Confirmación por WhatsApp */}
+          <div className="pt-4 text-center space-y-2">
+            <a
+              href={`https://wa.me/${data.wa_confirmar}?text=${mensajeWhatsApp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2.5 w-full bg-[#25D366] hover:bg-[#20ba5a] text-white py-4.5 rounded-[2rem] font-sans font-bold text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all cursor-pointer"
+            >
+              <MessageCircle size={18} />
+              <span>Confirmar Asistencia</span>
+            </a>
+
+            <p className={`text-[10px] uppercase tracking-widest font-sans opacity-50 pt-2`}>
+              Te esperamos con mucha alegría
+            </p>
+          </div>
+
         </div>
-      </div>
+
+      </main>
     </div>
   );
 };
 
 // =========================================================================
-// 2. MOTOR MODERADO ($950)
+// 2. MOTOR MODERADO ($790)
 // =========================================================================
 const LayoutModerado = ({ data }: { data: any }) => {
   const tema = data.tema || ESTILOS.crema_lujo;
@@ -137,7 +225,6 @@ const LayoutModerado = ({ data }: { data: any }) => {
           </div>
           <div className="w-full -mt-10 pt-12 pb-6 px-6 bg-[#E3D4B6] rounded-2xl shadow-lg border border-[#D1BE99] text-center relative z-10">
             <h1 className="text-4xl md:text-5xl italic text-[#3F372C] leading-none">{data.nombre}</h1>
-            {/* Título dinámico en lugar de "Nuestra Boda" */}
             <p className="text-[10px] uppercase tracking-[0.35em] text-[#73634B] mt-3 font-sans font-medium">
               {data.titulo}
             </p>
@@ -165,7 +252,8 @@ const LayoutModerado = ({ data }: { data: any }) => {
 
         <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={false} />
         <GaleriaLookbook fotos={data.galeria} esOscuro={false} permitirZoom={false} />
-        <ItinerarioSeccion itinerario={data.itinerario} lugar={data.lugar} mapa={data.mapa} esOscuro={false} />
+        {/* Corrección de parámetros: lugarGeneral y mapaGeneral */}
+        <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={false} />
         <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={false} conPaleta={false} />
 
         {/* Confirmación WhatsApp */}
@@ -260,7 +348,7 @@ const LayoutAvanzado = ({
 
           <CuentaRegresiva fechaISO={data.fechaISO} variante="fiesta" />
           <GaleriaLookbook fotos={data.galeria} permitirZoom={true} />
-          <ItinerarioSeccion itinerario={data.itinerario} lugar={data.lugar} mapa={data.mapa} esOscuro={true} />
+          <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={true} />
 
           <div className="text-center space-y-5">
             <p className="italic text-base text-[#D1D5DB] px-4">"{data.frase}"</p>
@@ -297,7 +385,6 @@ const LayoutAvanzado = ({
           </div>
           <div className={`w-full -mt-10 pt-12 pb-6 px-6 ${esOscuro ? "bg-[#1E1B17] border-[#C5A880]/30 text-[#FAF8F5]" : "bg-[#E3D4B6] border-[#D1BE99] text-[#3F372C]"} rounded-2xl shadow-lg border text-center relative z-10`}>
             <h1 className="text-4xl md:text-5xl italic leading-none">{data.nombre}</h1>
-            {/* Título dinámico en lugar de "Nuestra Boda" */}
             <p className={`text-[10px] uppercase tracking-[0.35em] ${esOscuro ? "text-[#D4AF37]" : "text-[#73634B]"} mt-3 font-sans font-medium`}>
               {data.titulo}
             </p>
@@ -340,7 +427,8 @@ const LayoutAvanzado = ({
 
         <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={esOscuro} />
         <GaleriaLookbook fotos={data.galeria} esOscuro={esOscuro} permitirZoom={true} />
-        <ItinerarioSeccion itinerario={data.itinerario} lugar={data.lugar} mapa={data.mapa} esOscuro={esOscuro} />
+        {/* Corrección de parámetros: lugarGeneral y mapaGeneral */}
+        <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={esOscuro} />
         <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={esOscuro} conPaleta={true} />
 
         {/* Regalos */}
@@ -411,7 +499,6 @@ function InvitacionDinamica() {
     if (slug) obtenerEvento();
   }, [slug]);
 
-  // Actualiza el título de la pestaña del navegador automáticamente
   useEffect(() => {
     if (eventoData) {
       document.title = `${eventoData.nombre} • ${eventoData.titulo || "Invitación"} | Nuestra Invitación`;
@@ -440,7 +527,8 @@ function InvitacionDinamica() {
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center font-serif">Cargando invitación...</div>}>
-      {modelo === 'basica' && <LayoutBasico data={eventoData} />}
+      {/* Pasamos estiloActivo también a LayoutBasico para heredar el tema */}
+      {modelo === 'basica' && <LayoutBasico data={eventoData} estiloActivo={estiloActivo} />}
       {modelo === 'moderada' && <LayoutModerado data={eventoData} />}
       {modelo === 'avanzada' && (
         <LayoutAvanzado 
