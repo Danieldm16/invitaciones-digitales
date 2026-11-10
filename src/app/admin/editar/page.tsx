@@ -136,14 +136,12 @@ function EditarContent() {
     setGuardando(true);
     let urlFotoHeroFinal = fotoHero;
 
-    // Si seleccionó una foto de portada nueva para reemplazar:
     if (heroFile) {
       setProgreso("Subiendo nueva foto de portada...");
       const nuevaUrl = await subirArchivoStorage(heroFile, slug);
       if (nuevaUrl) urlFotoHeroFinal = nuevaUrl;
     }
 
-    // Si seleccionó fotos adicionales para la galería:
     let listaGaleriaFinal = [...galeriaUrls];
     if (nuevasGaleriaFiles.length > 0) {
       setProgreso("Subiendo fotos nuevas a la galería...");
@@ -192,6 +190,11 @@ function EditarContent() {
       toast.error("Error al actualizar: " + error.message);
     }
   };
+
+  // Filtra los estilos para mostrar solo los que pertenecen a la categoría actual
+  const estilosDisponibles = Object.values(ESTILOS).filter((est: any) => 
+    est.categorias ? est.categorias.includes(tipo) : true
+  );
 
   if (loading) return <div className="p-12 text-center text-sm font-serif italic text-[#7A7267]">Cargando datos...</div>;
 
@@ -247,12 +250,22 @@ function EditarContent() {
                 <label className="text-[11px] font-bold text-[#554E45] block mb-1">Tipo de Evento</label>
                 <select
                   value={tipo}
-                  onChange={(e) => setTipo(e.target.value)}
+                  onChange={(e) => {
+                    const nuevoTipo = e.target.value;
+                    setTipo(nuevoTipo);
+                    
+                    const estilosValidos = Object.values(ESTILOS).filter((est: any) => 
+                      est.categorias ? est.categorias.includes(nuevoTipo) : true
+                    );
+                    if (estilosValidos.length > 0 && !estilosValidos.some((est: any) => est.id === estiloVisual)) {
+                      setEstiloVisual(estilosValidos[0].id);
+                    }
+                  }}
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] cursor-pointer"
                 >
                   <option value="boda">💍 Boda</option>
-                  <option value="cumple">🎂 Cumpleaños</option>
                   <option value="xv">👑 XV Años</option>
+                  <option value="cumple">🎂 Cumpleaños</option>
                   <option value="bautizo">🕊️ Bautizo</option>
                 </select>
               </div>
@@ -264,7 +277,7 @@ function EditarContent() {
                   onChange={(e) => setEstiloVisual(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] cursor-pointer"
                 >
-                  {Object.values(ESTILOS).map((est: any) => (
+                  {estilosDisponibles.map((est: any) => (
                     <option key={est.id} value={est.id}>
                       {est.nombreVisible || est.id}
                     </option>
@@ -375,7 +388,7 @@ function EditarContent() {
             </div>
           </div>
 
-          {/* 4. DESTINO DE CONFIRMACIONES WHATSAPP (BÁSICA Y MODERADA) */}
+          {/* 4. DESTINO DE CONFIRMACIONES WHATSAPP */}
           <div className="bg-[#F4F6F4] p-6 rounded-2xl border border-[#8E9B8E]/30 space-y-3">
             <div className="flex items-center gap-2 text-[#4A5D4A]">
               <MessageCircle size={18} />
@@ -395,12 +408,11 @@ function EditarContent() {
             </div>
           </div>
 
-          {/* 5. MULTIMEDIA, MÚSICA Y REGALOS (¡AHORA CON MÚSICA Y SUBIDA DE FOTOS!) */}
+          {/* 5. MULTIMEDIA, MÚSICA Y REGALOS */}
           <div className="space-y-4">
             <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">5. Fotos, Música y Regalos</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Foto de Portada */}
               <div className="p-5 border-2 border-dashed border-[#EAE4D9] bg-[#FAF9F6]/60 rounded-2xl text-center space-y-3">
                 <ImageIcon className="mx-auto text-[#D4A39E]" size={26} />
                 <p className="text-xs font-bold text-[#2E2820]">Foto de Portada</p>
@@ -418,12 +430,10 @@ function EditarContent() {
                 />
               </div>
 
-              {/* Galería de Fotos */}
               <div className="p-5 border-2 border-dashed border-[#EAE4D9] bg-[#FAF9F6]/60 rounded-2xl text-center space-y-3">
                 <Upload className="mx-auto text-[#8E9B8E]" size={26} />
                 <p className="text-xs font-bold text-[#2E2820]">Galería ({galeriaUrls.length} fotos guardadas)</p>
                 
-                {/* Miniaturas de fotos existentes con botón de borrar */}
                 {galeriaUrls.length > 0 && (
                   <div className="flex items-center justify-center gap-1.5 flex-wrap max-h-24 overflow-y-auto p-1 bg-white rounded-xl border border-[#EAE4D9]">
                     {galeriaUrls.map((url, idx) => (
@@ -432,7 +442,7 @@ function EditarContent() {
                         <button
                           type="button"
                           onClick={() => eliminarFotoGaleriaExistente(idx)}
-                          className="absolute inset-0 bg-red-600/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute inset-0 bg-red-600/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
                           <Trash2 size={12} />
                         </button>
@@ -452,7 +462,6 @@ function EditarContent() {
               </div>
             </div>
 
-            {/* Música y Regalos (¡Aquí está la música que faltaba!) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="text-[11px] font-bold text-[#554E45] block mb-1">Música (.mp3 o link directo)</label>
@@ -502,7 +511,6 @@ function EditarContent() {
               </div>
             </div>
 
-            {/* Itinerario */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <div>

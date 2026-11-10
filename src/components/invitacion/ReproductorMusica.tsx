@@ -10,27 +10,30 @@ export const ReproductorMusica = ({
   toggleAudio, 
   musicaUrl, 
   esOscuro = false,
-  mostrarBarra = true 
+  mostrarBarra = true,
+  estilo 
 }: { 
   audioRef: React.RefObject<HTMLAudioElement | null>, 
   playing: boolean, 
   toggleAudio: () => void, 
   musicaUrl?: string, 
   esOscuro?: boolean,
-  mostrarBarra?: boolean 
+  mostrarBarra?: boolean,
+  estilo?: any 
 }) => {
+  const acento = estilo?.acento || (esOscuro ? "text-[#D4AF37]" : "text-[#59524C]");
+  const botonFondo = estilo?.botonPrimario || (esOscuro ? "bg-[#D4AF37] text-black" : "bg-[#3B352E] text-white");
+
   return (
     <>
       <audio ref={audioRef} src={musicaUrl} loop preload="auto" />
 
-      {/* Botón flotante superior derecho */}
+      {/* Botón flotante */}
       <button
         onClick={toggleAudio}
         className={`fixed top-5 right-5 z-40 w-11 h-11 rounded-full shadow-lg border flex items-center justify-center transition-all cursor-pointer ${
-          esOscuro
-            ? "bg-[#181614]/90 text-[#D4AF37] border-[#D4AF37]/50 shadow-[0_0_15px_rgba(212,175,55,0.3)]"
-            : "bg-white/90 text-[#59524C] hover:text-[#C5A880] border-[#E8E1D5]"
-        }`}
+          esOscuro ? "bg-[#181614]/90 border-white/20" : "bg-white/90 border-black/10"
+        } ${acento}`}
       >
         {playing ? (
           <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 4, ease: 'linear' }}>
@@ -44,17 +47,17 @@ export const ReproductorMusica = ({
         )}
       </button>
 
-      {/* Barra de reproducción con botón play */}
+      {/* Barra */}
       {mostrarBarra && (
         <section className="px-6 py-4">
-          <div className={`${esOscuro ? "bg-[#1A1816] border-[#C5A880]/20" : "bg-white border-[#EBE4D8]"} rounded-2xl p-5 shadow-sm border text-center space-y-3`}>
-            <p className={`text-xs uppercase tracking-[0.2em] ${esOscuro ? "text-[#C5A880]" : "text-[#6E665D]"} font-sans font-semibold`}>
+          <div className={`${estilo?.tarjeta || "bg-white"} rounded-2xl p-5 shadow-sm border ${estilo?.bordeAcento || "border-black/10"} text-center space-y-3`}>
+            <p className={`text-xs uppercase tracking-[0.2em] ${acento} font-sans font-semibold`}>
               {playing ? "Sonando nuestra canción..." : "Dale Play Para Escuchar Nuestra Canción"}
             </p>
             <div className="flex items-center justify-center gap-6">
               <button 
                 onClick={toggleAudio} 
-                className={`w-11 h-11 rounded-full ${esOscuro ? "bg-[#D4AF37] text-black" : "bg-[#3B352E] text-[#F7F4EE]"} flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer`}
+                className={`w-11 h-11 rounded-full ${botonFondo} flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all text-xs cursor-pointer`}
               >
                 {playing ? '⏸' : '▶'}
               </button>

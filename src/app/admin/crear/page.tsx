@@ -39,7 +39,6 @@ export default function CrearInvitacionPage() {
 
   // Regalos
   const [mesaRegalos, setMesaRegalos] = useState("");
-  // const [datosBancarios, setDatosBancarios] = useState("");
   const [musicaUrl, setMusicaUrl] = useState("");
 
   // Vestimenta
@@ -50,7 +49,7 @@ export default function CrearInvitacionPage() {
   const [heroFile, setHeroFile] = useState<File | null>(null);
   const [galeriaFiles, setGaleriaFiles] = useState<File[]>([]);
 
-  // Itinerario dinámico con lugar y mapa por actividad
+  // Itinerario dinámico
   const [itinerario, setItinerario] = useState<{ h: string; a: string; icon: string; lugar: string; mapa: string }[]>([
     { h: "5:00 PM", a: "Ceremonia Religiosa", icon: "⛪", lugar: "Parroquia San Pedro", mapa: "" },
     { h: "7:00 PM", a: "Recepción y Banquete", icon: "🥂", lugar: "Hacienda del Valle", mapa: "" }
@@ -159,6 +158,11 @@ export default function CrearInvitacionPage() {
     }
   };
 
+  // Filtra los estilos para mostrar solo los de la categoría seleccionada
+  const estilosDisponibles = Object.values(ESTILOS).filter((est: any) => 
+    est.categorias ? est.categorias.includes(tipo) : true
+  );
+
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-[#2E2820] p-4 md:p-12 font-sans antialiased">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -216,6 +220,14 @@ export default function CrearInvitacionPage() {
                   onChange={(e) => {
                     const nuevoTipo = e.target.value;
                     setTipo(nuevoTipo);
+                    
+                    const estilosValidos = Object.values(ESTILOS).filter((est: any) => 
+                      est.categorias ? est.categorias.includes(nuevoTipo) : true
+                    );
+                    if (estilosValidos.length > 0 && !estilosValidos.some((est: any) => est.id === estiloVisual)) {
+                      setEstiloVisual(estilosValidos[0].id);
+                    }
+
                     if (nuevoTipo === "xv") {
                       setTitulo("Mis XV Años");
                       setNotaDressCode("Evitar color del vestido de la quinceañera.");
@@ -233,8 +245,8 @@ export default function CrearInvitacionPage() {
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] cursor-pointer"
                 >
                   <option value="boda">💍 Boda</option>
-                  <option value="cumple">🎂 Cumpleaños</option>
                   <option value="xv">👑 XV Años</option>
+                  <option value="cumple">🎂 Cumpleaños</option>
                   <option value="bautizo">🕊️ Bautizo</option>
                 </select>
               </div>
@@ -246,7 +258,7 @@ export default function CrearInvitacionPage() {
                   onChange={(e) => setEstiloVisual(e.target.value)}
                   className="w-full px-3.5 py-2.5 bg-white border border-[#EAE4D9] rounded-xl text-xs outline-none focus:border-[#D4A39E] cursor-pointer"
                 >
-                  {Object.values(ESTILOS).map((est: any) => (
+                  {estilosDisponibles.map((est: any) => (
                     <option key={est.id} value={est.id}>
                       {est.nombreVisible || est.id}
                     </option>
@@ -365,7 +377,7 @@ export default function CrearInvitacionPage() {
             </div>
           </div>
 
-          {/* 4. DESTINO DE CONFIRMACIONES WHATSAPP (CLAVE PARA BÁSICA Y MODERADA) */}
+          {/* 4. DESTINO DE CONFIRMACIONES WHATSAPP */}
           <div className="bg-[#F4F6F4] p-6 rounded-2xl border border-[#8E9B8E]/30 space-y-3">
             <div className="flex items-center gap-2 text-[#4A5D4A]">
               <MessageCircle size={18} />
@@ -440,7 +452,7 @@ export default function CrearInvitacionPage() {
             </div>
           </div>
 
-          {/* 6. VESTIMENTA E ITINERARIO CON LUGAR Y MAPA PROPIO */}
+          {/* 6. VESTIMENTA E ITINERARIO */}
           <div className="space-y-4">
             <h2 className="text-[10px] font-bold uppercase text-[#8A8177] tracking-widest">6. Vestimenta e Itinerario con Lugares</h2>
 
@@ -466,7 +478,6 @@ export default function CrearInvitacionPage() {
               </div>
             </div>
 
-            {/* Itinerario con lugar y mapa independiente */}
             <div className="space-y-3 pt-2">
               <div className="flex items-center justify-between">
                 <div>
@@ -485,7 +496,6 @@ export default function CrearInvitacionPage() {
               {itinerario.map((item, index) => (
                 <div key={index} className="p-4 bg-[#FAF9F6] rounded-2xl border border-[#EAE4D9] space-y-3">
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    {/* Emoji */}
                     <div className="flex items-center gap-1.5 shrink-0">
                       <input
                         value={item.icon || "✨"}
@@ -547,7 +557,6 @@ export default function CrearInvitacionPage() {
                     )}
                   </div>
 
-                  {/* Lugar y Mapa PROPIO para esta actividad */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-[#EAE4D9]/60">
                     <input
                       value={item.lugar || ""}
