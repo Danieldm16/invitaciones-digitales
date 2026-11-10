@@ -7,30 +7,29 @@ import { Camera, X } from 'lucide-react';
 export const GaleriaLookbook = ({ 
   fotos, 
   esOscuro = false, 
-  permitirZoom = true 
+  permitirZoom = true,
+  estilo 
 }: { 
   fotos?: string[], 
   esOscuro?: boolean, 
-  permitirZoom?: boolean 
+  permitirZoom?: boolean,
+  estilo?: any 
 }) => {
   const [fotoModal, setFotoModal] = useState<string | null>(null);
-
   if (!fotos || fotos.length === 0) return null;
+
+  const acento = estilo?.acento || (esOscuro ? "text-[#D4AF37]" : "text-[#C5A880]");
+  const borde = estilo?.bordeAcento || (esOscuro ? "border-white/10" : "border-white");
 
   return (
     <>
       <section className="px-6 py-6 space-y-4">
         <div className="text-center space-y-1">
-          <Camera className={`mx-auto ${esOscuro ? "text-[#D4AF37]" : "text-[#C5A880]"}`} size={22} strokeWidth={1.5} />
-          <h3 className={`text-xs uppercase tracking-[0.3em] ${esOscuro ? "text-[#C5A880]" : "text-[#85796A]"} font-sans font-semibold`}>
+          <Camera className={`mx-auto ${acento}`} size={22} strokeWidth={1.5} />
+          <h3 className={`text-xs uppercase tracking-[0.3em] ${acento} font-sans font-semibold`}>
             Nuestra Historia
           </h3>
-          <p className={`text-2xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#3F372C]"}`}>Galería de Fotos</p>
-          {permitirZoom && (
-            <p className={`text-[10px] ${esOscuro ? "text-[#A89F91]" : "text-[#9E9485]"} font-sans tracking-widest pt-1`}>
-              (Toca cualquier foto para ampliarla)
-            </p>
-          )}
+          <p className={`text-2xl italic ${estilo?.textoPrincipal || (esOscuro ? "text-[#FAF8F5]" : "text-[#3F372C]")}`}>Galería de Fotos</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 pt-2">
@@ -38,8 +37,8 @@ export const GaleriaLookbook = ({
             <div
               key={idx}
               onClick={() => permitirZoom && setFotoModal(imgUrl)}
-              className={`rounded-2xl overflow-hidden shadow-sm border-2 ${
-                esOscuro ? "border-[#C5A880]/30 bg-[#181614]" : "border-white bg-white"
+              className={`rounded-2xl overflow-hidden shadow-sm border-2 ${borde} ${
+                esOscuro ? "bg-[#181614]" : "bg-white"
               } group ${permitirZoom ? "cursor-pointer" : ""} ${idx === 0 ? "col-span-2 aspect-[16/10]" : "aspect-square"}`}
             >
               <img src={imgUrl} alt={`Foto ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />

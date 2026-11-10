@@ -1,54 +1,241 @@
 // =========================================================================
-// 1. ESTILOS VISUALES ("SKINS")
+// 1. ESTILOS VISUALES ("SKINS") - CATÁLOGO COMPLETO Y ENRIQUECIDO
 // =========================================================================
 export const ESTILOS = {
-  // Estilo 1: Papelería Fina / Canva Artesanal
+  // -----------------------------------------------------------------------
+  // 💍 BODAS
+  // -----------------------------------------------------------------------
   crema_lujo: {
     id: "crema_lujo",
-    nombreVisible: "Crema Artesanal",
+    nombreVisible: "📜 Crema Artesanal (Papelería Clásica)",
+    categorias: ["boda"],
     fondo: "bg-[#F7F4EE]",
-    tarjeta: "bg-white text-[#33302C] border-[#EBE4D8]",
-    acento: "text-[#C5A880]",
-    acentoBg: "bg-[#C5A880]",
+    tarjeta: "bg-[#FAF7F2] text-[#33302C] border-[#E5DEC9]",
+    headerGradiente: "bg-gradient-to-b from-[#EFE8DA] to-[#FAF7F2]",
+    acento: "text-[#B89764]",
+    acentoBg: "bg-[#B89764]",
     bordeDorado: "border-[#D4AF37]/40",
+    bordeAcento: "border-[#C5A880]/50",
+    botonPrimario: "bg-[#B89764] hover:bg-[#a68453] text-white shadow-amber-900/10",
+    badge: "bg-[#F0E8D8] text-[#8C6D3F] border border-[#D8C7A5]",
     textoPrincipal: "text-[#33302C]",
     textoSecundario: "text-[#7A7267]",
     fuente: "font-serif",
     modoOscuro: false,
   },
-  // Estilo 2: Black Tie / Gala Nocturna
   black_tie: {
     id: "black_tie",
-    nombreVisible: "Black Tie Gala",
-    fondo: "bg-[#080808]",
-    tarjeta: "bg-[#121110] text-[#F3EFE6] border-[#C5A880]/30",
-    acento: "text-[#D4AF37]",
-    acentoBg: "bg-[#D4AF37]",
+    nombreVisible: "🖤 Black Tie (Gala Ónix & Oro)",
+    categorias: ["boda"],
+    fondo: "bg-[#0A0A0A]",
+    tarjeta: "bg-[#141414] text-[#F3EFE6] border-[#D4AF37]/25",
+    headerGradiente: "bg-gradient-to-b from-[#1C1A17] to-[#141414]",
+    acento: "text-[#E5C158]",
+    acentoBg: "bg-gradient-to-r from-[#D4AF37] to-[#AA820A]",
     bordeDorado: "border-[#D4AF37]/50",
+    bordeAcento: "border-[#D4AF37]/40",
+    botonPrimario: "bg-[#D4AF37] hover:bg-[#bfa035] text-black font-bold shadow-amber-500/20",
+    badge: "bg-[#221F1A] text-[#E5C158] border border-[#D4AF37]/30",
     textoPrincipal: "text-[#FAF8F5]",
     textoSecundario: "text-[#A89F91]",
     fuente: "font-serif",
     modoOscuro: true,
   },
-  // Estilo 3: Fiesta / Nightlife (Cumpleaños & XV)
+  verde_olivo: {
+    id: "verde_olivo",
+    nombreVisible: "🌿 Jardín & Olivo (Hacienda / Viñedo)",
+    categorias: ["boda"],
+    fondo: "bg-[#EDF2EB]",
+    tarjeta: "bg-[#FAFCF8] text-[#20291D] border-[#C8D6C3]",
+    headerGradiente: "bg-gradient-to-b from-[#DCE7D8] via-[#EDF2EB] to-[#FAFCF8]",
+    acento: "text-[#43573E]",
+    acentoBg: "bg-gradient-to-r from-[#536B4E] to-[#3B4D37]",
+    bordeDorado: "border-[#8DA585]/50",
+    bordeAcento: "border-[#536B4E]/35",
+    botonPrimario: "bg-[#43573E] hover:bg-[#344430] text-white shadow-emerald-950/20",
+    badge: "bg-[#E2EDE0] text-[#344430] border border-[#BFD3BC]",
+    textoPrincipal: "text-[#20291D]",
+    textoSecundario: "text-[#586C53]",
+    fuente: "font-serif",
+    modoOscuro: false,
+  },
+
+  // -----------------------------------------------------------------------
+  // 👑 XV AÑOS
+  // -----------------------------------------------------------------------
+  rosa_glam: {
+    id: "rosa_glam",
+    nombreVisible: "👑 Rose Gold Glam (Princesa Moderna)",
+    categorias: ["xv"],
+    fondo: "bg-[#FDF6F8]",
+    tarjeta: "bg-white text-[#38282E] border-[#F4D3DC]",
+    headerGradiente: "bg-gradient-to-b from-[#FCE4EC] to-white",
+    acento: "text-[#C76A82]",
+    acentoBg: "bg-gradient-to-r from-[#D97D96] to-[#B85B73]",
+    bordeDorado: "border-[#E8A5B7]/60",
+    bordeAcento: "border-[#C76A82]/40",
+    botonPrimario: "bg-[#C76A82] hover:bg-[#b0576e] text-white shadow-pink-500/20",
+    badge: "bg-[#FDE8EF] text-[#B85B73] border border-[#F3BFD0]",
+    textoPrincipal: "text-[#38282E]",
+    textoSecundario: "text-[#82616D]",
+    fuente: "font-serif",
+    modoOscuro: false,
+  },
+  azul_cenicienta: {
+    id: "azul_cenicienta",
+    nombreVisible: "✨ Azul Real & Plata (Cenicienta)",
+    categorias: ["xv"],
+    fondo: "bg-[#060B14]",
+    tarjeta: "bg-[#0B1526] text-[#E0F2FE] border-[#38BDF8]/30",
+    headerGradiente: "bg-gradient-to-b from-[#0F2342] to-[#0B1526]",
+    acento: "text-[#38BDF8]",
+    acentoBg: "bg-gradient-to-r from-[#38BDF8] to-[#0284C7]",
+    bordeDorado: "border-[#38BDF8]/40",
+    bordeAcento: "border-[#38BDF8]/40",
+    botonPrimario: "bg-[#0284C7] hover:bg-[#0369a1] text-white shadow-sky-500/25",
+    badge: "bg-[#0E223D] text-[#7DD3FC] border border-[#0284C7]/40",
+    textoPrincipal: "text-[#F0F9FF]",
+    textoSecundario: "text-[#94A3B8]",
+    fuente: "font-serif",
+    modoOscuro: true,
+  },
+  lavanda_fairy: {
+    id: "lavanda_fairy",
+    nombreVisible: "🌸 Lavanda Etéreo (Cuento de Hadas)",
+    categorias: ["xv"],
+    fondo: "bg-[#F8F5FC]",
+    tarjeta: "bg-white text-[#2C2138] border-[#E5DAF5]",
+    headerGradiente: "bg-gradient-to-b from-[#EFE5FB] to-white",
+    acento: "text-[#7C3AED]",
+    acentoBg: "bg-gradient-to-r from-[#8B5CF6] to-[#6D28D9]",
+    bordeDorado: "border-[#C4B5FD]/60",
+    bordeAcento: "border-[#7C3AED]/35",
+    botonPrimario: "bg-[#7C3AED] hover:bg-[#6d28d9] text-white shadow-purple-500/20",
+    badge: "bg-[#F1E8FD] text-[#6D28D9] border border-[#DDD0F8]",
+    textoPrincipal: "text-[#2C2138]",
+    textoSecundario: "text-[#756488]",
+    fuente: "font-serif",
+    modoOscuro: false,
+  },
+
+  // -----------------------------------------------------------------------
+  // 🎂 CUMPLEAÑOS
+  // -----------------------------------------------------------------------
   fiesta_vip: {
     id: "fiesta_vip",
-    nombreVisible: "Fiesta VIP",
-    fondo: "bg-[#0A0713]",
-    tarjeta: "bg-[#140F24] text-white border-[#8B5CF6]/30",
-    acento: "text-[#A78BFA]",
-    acentoBg: "bg-[#8B5CF6]",
-    bordeDorado: "border-[#8B5CF6]/40",
+    nombreVisible: "💜 Nightclub VIP (Neón & Antro)",
+    categorias: ["cumple", "xv"],
+    fondo: "bg-[#080511]",
+    tarjeta: "bg-[#120B24] text-white border-[#A855F7]/30",
+    headerGradiente: "bg-gradient-to-b from-[#210D44] to-[#120B24]",
+    acento: "text-[#C084FC]",
+    acentoBg: "bg-gradient-to-r from-[#A855F7] to-[#EC4899]",
+    bordeDorado: "border-[#A855F7]/40",
+    bordeAcento: "border-[#A855F7]/40",
+    botonPrimario: "bg-gradient-to-r from-[#A855F7] to-[#EC4899] text-white shadow-purple-500/30",
+    badge: "bg-[#251245] text-[#D8B4FE] border border-[#A855F7]/40",
     textoPrincipal: "text-white",
-    textoSecundario: "text-[#9CA3AF]",
+    textoSecundario: "text-[#A1A1AA]",
     fuente: "font-sans",
     modoOscuro: true,
   },
+  dorado_adulto: {
+    id: "dorado_adulto",
+    nombreVisible: "🥂 Champagne & Glam (Cumple 30 / 40 / 50)",
+    categorias: ["cumple"],
+    fondo: "bg-[#111111]",
+    tarjeta: "bg-[#1A1815] text-[#FAF8F5] border-[#D4AF37]/30",
+    headerGradiente: "bg-gradient-to-b from-[#2A241A] to-[#1A1815]",
+    acento: "text-[#E6C665]",
+    acentoBg: "bg-gradient-to-r from-[#D4AF37] to-[#B38D1B]",
+    bordeDorado: "border-[#D4AF37]/45",
+    bordeAcento: "border-[#D4AF37]/40",
+    botonPrimario: "bg-[#D4AF37] hover:bg-[#c49f2c] text-black font-bold shadow-amber-500/20",
+    badge: "bg-[#2B2418] text-[#E6C665] border border-[#D4AF37]/35",
+    textoPrincipal: "text-[#FAF8F5]",
+    textoSecundario: "text-[#A89F91]",
+    fuente: "font-sans",
+    modoOscuro: true,
+  },
+  sunset_tropical: {
+    id: "sunset_tropical",
+    nombreVisible: "🌴 Sunset Party (Albercada / Terraza)",
+    categorias: ["cumple"],
+    fondo: "bg-[#FFF8F3]",
+    tarjeta: "bg-white text-[#382319] border-[#FED7AA]",
+    headerGradiente: "bg-gradient-to-b from-[#FFE5D3] to-white",
+    acento: "text-[#EA580C]",
+    acentoBg: "bg-gradient-to-r from-[#F97316] to-[#EA580C]",
+    bordeDorado: "border-[#FDBA74]/60",
+    bordeAcento: "border-[#EA580C]/40",
+    botonPrimario: "bg-[#EA580C] hover:bg-[#c2410c] text-white shadow-orange-500/20",
+    badge: "bg-[#FFEDD5] text-[#C2410C] border border-[#FDBA74]",
+    textoPrincipal: "text-[#382319]",
+    textoSecundario: "text-[#855B49]",
+    fuente: "font-sans",
+    modoOscuro: false,
+  },
+
+  // -----------------------------------------------------------------------
+  // 🕊️ BAUTIZOS & PRIMERA COMUNIÓN
+  // -----------------------------------------------------------------------
+  celeste_angelical: {
+    id: "celeste_angelical",
+    nombreVisible: "🕊️ Celeste Ángel (Bautizo Niño)",
+    categorias: ["bautizo"],
+    fondo: "bg-[#F3F8FC]",
+    tarjeta: "bg-white text-[#1C2C3D] border-[#CFE4F7]",
+    headerGradiente: "bg-gradient-to-b from-[#E0EFFC] to-white",
+    acento: "text-[#2563EB]",
+    acentoBg: "bg-gradient-to-r from-[#3B82F6] to-[#1D4ED8]",
+    bordeDorado: "border-[#93C5FD]/60",
+    bordeAcento: "border-[#3B82F6]/35",
+    botonPrimario: "bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-blue-500/20",
+    badge: "bg-[#EBF4FE] text-[#1D4ED8] border border-[#BFDBFE]",
+    textoPrincipal: "text-[#1C2C3D]",
+    textoSecundario: "text-[#5B728A]",
+    fuente: "font-serif",
+    modoOscuro: false,
+  },
+  rosa_perla: {
+    id: "rosa_perla",
+    nombreVisible: "🌸 Rosa Perla & Oro (Bautizo Niña)",
+    categorias: ["bautizo"],
+    fondo: "bg-[#FDF6F8]",
+    tarjeta: "bg-white text-[#38232B] border-[#F8D5E1]",
+    headerGradiente: "bg-gradient-to-b from-[#FCE5ED] to-white",
+    acento: "text-[#DB2777]",
+    acentoBg: "bg-gradient-to-r from-[#EC4899] to-[#BE185D]",
+    bordeDorado: "border-[#FBCFE8]/70",
+    bordeAcento: "border-[#EC4899]/35",
+    botonPrimario: "bg-[#DB2777] hover:bg-[#be185d] text-white shadow-pink-500/20",
+    badge: "bg-[#FDF0F5] text-[#BE185D] border border-[#F9C3D6]",
+    textoPrincipal: "text-[#38232B]",
+    textoSecundario: "text-[#7E5766]",
+    fuente: "font-serif",
+    modoOscuro: false,
+  },
+  eucalipto_santo: {
+    id: "eucalipto_santo",
+    nombreVisible: "🌿 Eucalipto & Lino (Neutro / Unisex)",
+    categorias: ["bautizo"],
+    fondo: "bg-[#F6F7F4]",
+    tarjeta: "bg-[#FCFDFB] text-[#293027] border-[#DCE3D9]",
+    headerGradiente: "bg-gradient-to-b from-[#E7ECE5] to-[#FCFDFB]",
+    acento: "text-[#556952]",
+    acentoBg: "bg-[#556952]",
+    bordeDorado: "border-[#9CAD98]/50",
+    bordeAcento: "border-[#556952]/35",
+    botonPrimario: "bg-[#556952] hover:bg-[#435340] text-white shadow-stone-800/10",
+    badge: "bg-[#EBF0E9] text-[#435340] border border-[#CFDACA]",
+    textoPrincipal: "text-[#293027]",
+    textoSecundario: "text-[#637360]",
+    fuente: "font-serif",
+    modoOscuro: false,
+  },
 };
 
-// Mantenemos TEMAS como alias para que ningún código antiguo falle
 export const TEMAS = ESTILOS;
-
 // =========================================================================
 // 2. BASE DE DATOS DE CLIENTES
 // =========================================================================
@@ -56,7 +243,8 @@ export const EVENTOS = {
   // BODA: Ana & Juan
   "boda-ana-y-juan": {
     tipo: "boda",
-    estiloVisual: "crema_lujo", // Estilo por defecto (puedes cambiarlo a "black_tie")
+    categoria: "boda",
+    estiloVisual: "crema_lujo",
     tema: ESTILOS.crema_lujo,
     nombre: "Ana & Juan",
     titulo: "Nuestra Boda",
@@ -71,7 +259,7 @@ export const EVENTOS = {
     foto_hero: "https://images.unsplash.com/photo-1519741497674-611481863552",
     mesa_regalos: "https://amazon.com.mx",
     id_supabase: "boda-ana-juan-2026",
-    musica_url: "/musica/cancion_bodas.mp3",
+    musica_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     dressCode: "FORMAL",
     galeria: [
       "https://images.unsplash.com/photo-1519741497674-611481863552",
@@ -91,6 +279,7 @@ export const EVENTOS = {
   // CUMPLEAÑOS: Irma
   "irma_cumple": {
     tipo: "cumple",
+    categoria: "cumple",
     estiloVisual: "fiesta_vip",
     tema: ESTILOS.fiesta_vip,
     nombre: "Irma",
@@ -112,6 +301,41 @@ export const EVENTOS = {
       "https://images.unsplash.com/photo-1530103862676-de8c9debad1d",
       "https://images.unsplash.com/photo-1492684223066-81342ee5ff30",
       "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4"
+    ]
+  },
+
+  // XV AÑOS: Sofía (Nuevo evento de prueba) 👑
+  "xv-sofia": {
+    tipo: "xv",
+    categoria: "xv",
+    estiloVisual: "rosa_glam",
+    tema: ESTILOS.rosa_glam,
+    nombre: "Sofía",
+    titulo: "Mis XV Años",
+    frase: "Hay momentos en la vida que son inolvidables, y compartirlos con quienes más quiero los hace eternos.",
+    fecha: "Sábado 12 de Diciembre",
+    fechaISO: "2026-12-12T18:00:00",
+    hora: "6:00 PM",
+    lugar: "Catedral de Santiago",
+    direccion: "Zona Centro, Saltillo, Coahuila",
+    mapa: "https://maps.google.com",
+    wa_confirmar: "528441112233",
+    foto_hero: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67",
+    mesa_regalos: "https://liverpool.com.mx",
+    id_supabase: "xv-sofia-2026",
+    musica_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    dressCode: "RIGUROSA ETIQUETA",
+    galeria: [
+      "https://images.unsplash.com/photo-1566737236500-c8ac43014a67",
+      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7",
+      "https://images.unsplash.com/photo-1509631179647-0177331693ae",
+      "https://images.unsplash.com/photo-1520854221256-17451cc331bf"
+    ],
+    itinerario: [
+      { h: "6:00 PM", a: "Misa de Acción de Gracias - Catedral" },
+      { h: "8:00 PM", a: "Recepción y Cena de Gala - Salón La Española" },
+      { h: "10:00 PM", a: "El Gran Vals & Brindis" },
+      { h: "11:00 PM", a: "Apertura de Pista con DJ" }
     ]
   }
 };

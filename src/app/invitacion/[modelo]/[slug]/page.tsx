@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
-import { CalendarPlus, MessageCircle, Sparkles, PartyPopper, Music2, CheckCircle2 } from 'lucide-react';
+import { CalendarPlus, MessageCircle } from 'lucide-react';
 
 // 1. Configuraciones y Estilos
 import { EVENTOS, ESTILOS } from '@/lib/eventos-config';
 import { supabase } from '@/lib/supabase';
 
 // 2. Componentes modulares
-import { PuertasGala, SobreModal } from '@/components/invitacion/Aperturas';
+import { PuertasGala, SobreModal, SobreBotanico } from '@/components/invitacion/Aperturas';
 import { CuentaRegresiva } from '@/components/invitacion/CuentaRegresiva';
 import { ReproductorMusica } from '@/components/invitacion/ReproductorMusica';
 import { GaleriaLookbook } from '@/components/invitacion/GaleriaLookbook';
@@ -18,77 +18,113 @@ import { ItinerarioSeccion, DressCodeSeccion } from '@/components/invitacion/Det
 import { FormularioRSVP } from '@/components/invitacion/FormularioRSVP';
 
 // =========================================================================
-// 1. MOTOR BÁSICO ($390 - Papelería Artesanal de Lujo, Sin Animaciones)
+// DICCIONARIO DE TEXTOS E INSIGNIAS POR CATEGORÍA
+// =========================================================================
+const CONFIG_CATEGORIAS: Record<string, {
+  insignia: string;
+  tituloCelebracion: string;
+  subtituloHeader: string;
+  labelItinerario: string;
+  textoDefaultFrase: string;
+}> = {
+  boda: {
+    insignia: "⚜",
+    tituloCelebracion: "¡Nos Casamos!",
+    subtituloHeader: "Nuestra Boda",
+    labelItinerario: "Itinerario de Boda",
+    textoDefaultFrase: "Con nuestro amor, la presencia de Dios entre nosotros y la bendición de nuestros padres.",
+  },
+  xv: {
+    insignia: "👑",
+    tituloCelebracion: "¡Mis XV Años!",
+    subtituloHeader: "Mis XV Años",
+    labelItinerario: "Itinerario de Gala",
+    textoDefaultFrase: "Hay momentos en la vida que son inolvidables, y compartirlos con quienes más quiero los hace eternos.",
+  },
+  bautizo: {
+    insignia: "🕊️",
+    tituloCelebracion: "Mi Bautizo",
+    subtituloHeader: "Mi Bautizo",
+    labelItinerario: "Itinerario Sagrado",
+    textoDefaultFrase: "Hoy recibo la bendición de Dios y el amor de toda mi familia.",
+  },
+  cumple: {
+    insignia: "🎉",
+    tituloCelebracion: "¡Festejemos Juntos!",
+    subtituloHeader: "Mi Cumpleaños",
+    labelItinerario: "Lineup & Fiesta",
+    textoDefaultFrase: "Acompáñame a cantar, bailar y festejar la vida.",
+  },
+};
+
+// =========================================================================
+// 1. MOTOR BÁSICO ($390 - Papelería sin animaciones)
 // =========================================================================
 const LayoutBasico = ({ data, estiloActivo }: { data: any, estiloActivo: any }) => {
-  const esOscuro = estiloActivo.modoOscuro;
-  const esBoda = data.tipo === "boda";
-  const encabezadoFestejo = esBoda ? "¡Nos Casamos!" : data.tipo === "xv" ? "¡Mis XV Años!" : "¡Festejemos Juntos!";
+  const cat = (data.categoria || data.tipo || "boda").toLowerCase();
+  const configCat = CONFIG_CATEGORIAS[cat] || CONFIG_CATEGORIAS.boda;
+  const insigniaIcono = estiloActivo.id === "verde_olivo" ? "🌿" : configCat.insignia;
 
   const mensajeWhatsApp = encodeURIComponent(
-    esBoda
-      ? `¡Hola! Confirmo con mucho gusto mi asistencia a la boda de ${data.nombre} 💍✨`
-      : `¡Hola ${data.nombre}! Confirmo mi asistencia a tu evento 🎉`
+    `¡Hola! Confirmo con mucho gusto mi asistencia para ${data.nombre} 🎉✨`
   );
 
   return (
-    <div className={`min-h-screen ${esOscuro ? "bg-[#080808] text-[#F3EFE6]" : "bg-[#F7F4EE] text-[#33302C]"} flex justify-center py-0 md:py-8 px-0 md:px-4 font-serif antialiased selection:bg-[#C5A880] selection:text-white`}>
-      <main className={`w-full max-w-md ${esOscuro ? "bg-[#121110] border-[#C5A880]/30" : "bg-[#FAF8F5] border-[#EBE4D8]"} min-h-screen shadow-2xl relative border-x overflow-hidden pb-16`}>
+    <div className={`min-h-screen ${estiloActivo.fondo} ${estiloActivo.textoPrincipal} flex justify-center py-0 md:py-8 px-0 md:px-4 ${estiloActivo.fuente} antialiased`}>
+      <main className={`w-full max-w-md ${estiloActivo.tarjeta} min-h-screen shadow-2xl relative border-x overflow-hidden pb-16`}>
         
         {/* Cabecera con Foto Enmarcada */}
-        <header className={`relative pt-10 px-6 pb-6 flex flex-col items-center ${esOscuro ? "bg-gradient-to-b from-[#1C1A17] to-[#121110]" : "bg-gradient-to-b from-[#EFE8DA] to-[#FAF8F5]"}`}>
+        <header className="relative pt-10 px-6 pb-6 flex flex-col items-center">
           {data.foto_hero && (
-            <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${esOscuro ? "border-[#222] bg-[#141414]" : "border-white bg-white"}`}>
+            <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${estiloActivo.bordeAcento || estiloActivo.bordeDorado}`}>
               <img src={data.foto_hero} alt={data.nombre} className="w-full h-full object-cover" />
             </div>
           )}
 
-          <div className={`w-full ${data.foto_hero ? "-mt-10" : "mt-2"} pt-10 pb-6 px-6 ${esOscuro ? "bg-[#1E1B17] border-[#C5A880]/30 text-[#FAF8F5]" : "bg-[#E3D4B6] border-[#D1BE99] text-[#3F372C]"} rounded-2xl shadow-lg border text-center relative z-10 space-y-2`}>
+          <div className={`w-full ${data.foto_hero ? "-mt-10" : "mt-2"} pt-10 pb-6 px-6 ${estiloActivo.tarjeta} rounded-2xl shadow-lg border ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center relative z-10 space-y-2`}>
             <h1 className="text-4xl md:text-5xl italic leading-none">{data.nombre}</h1>
-            <p className={`text-[10px] uppercase tracking-[0.35em] ${esOscuro ? "text-[#D4AF37]" : "text-[#73634B]"} font-sans font-medium`}>
-              {data.titulo}
+            <p className={`text-[10px] uppercase tracking-[0.35em] ${estiloActivo.acento} font-sans font-medium`}>
+              {data.titulo || configCat.subtituloHeader}
             </p>
           </div>
         </header>
 
         {/* Tarjeta Central de Detalles del Evento */}
         <div className="px-6 py-4 space-y-6">
-          <div className={`relative ${esOscuro ? "bg-[#181614] border-[#D4AF37]/35" : "bg-white border-[#D4AF37]/35"} rounded-3xl p-8 pt-12 shadow-md border-2 text-center space-y-6`}>
+          <div className={`relative ${estiloActivo.tarjeta} rounded-3xl p-8 pt-12 shadow-md border-2 ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center space-y-6`}>
             
-            {/* Medallón Decorativo con Sello */}
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-[#E2B755] via-[#C99C35] to-[#997316] shadow-md border-2 border-white flex items-center justify-center">
-              <span className="text-white text-lg">⚜</span>
+            {/* Medallón Decorativo Dinámico */}
+            <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full ${estiloActivo.acentoBg} text-white shadow-md border-2 border-white flex items-center justify-center`}>
+              <span className="text-lg">{insigniaIcono}</span>
             </div>
 
             <div className="space-y-2">
-              <h2 className={`text-4xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>{encabezadoFestejo}</h2>
-              {data.frase && (
-                <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] ${esOscuro ? "text-[#D9CEBA]" : "text-[#696156]"} font-sans font-light px-2`}>
-                  "{data.frase}"
-                </p>
-              )}
+              <h2 className="text-4xl italic">{configCat.tituloCelebracion}</h2>
+              <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] font-sans font-light px-2 ${estiloActivo.textoSecundario}`}>
+                "{data.frase || configCat.textoDefaultFrase}"
+              </p>
             </div>
 
             {/* Fecha y Dirección */}
-            <div className={`py-6 border-y ${esOscuro ? "border-[#C5A880]/20" : "border-[#EBE4D8]"} space-y-3`}>
+            <div className="py-6 border-y border-current/15 space-y-3">
               <div className="space-y-1">
-                <span className={`text-[10px] uppercase tracking-[0.3em] ${esOscuro ? "text-[#D4AF37]" : "text-[#85796A]"} font-sans font-bold block`}>
+                <span className={`text-[10px] uppercase tracking-[0.3em] ${estiloActivo.acento} font-sans font-bold block`}>
                   Fecha
                 </span>
-                <p className={`text-3xl font-serif font-light ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>
+                <p className="text-3xl font-serif font-light">
                   {data.fecha}
                 </p>
                 {data.hora && (
-                  <p className={`text-xs uppercase tracking-widest font-sans font-semibold ${esOscuro ? "text-[#D4AF37]" : "text-[#7A623A]"}`}>
+                  <p className={`text-xs uppercase tracking-widest font-sans font-semibold ${estiloActivo.acento}`}>
                     {data.hora}
                   </p>
                 )}
               </div>
 
-              <div className="pt-2 border-t border-[#EAE4D9]/40 space-y-0.5">
-                <p className={`font-bold text-base ${esOscuro ? "text-white" : "text-[#2E2820]"}`}>{data.lugar}</p>
+              <div className="pt-2 border-t border-current/10 space-y-0.5">
+                <p className="font-bold text-base">{data.lugar}</p>
                 {data.direccion && (
-                  <p className={`text-[11px] tracking-wide ${esOscuro ? "text-[#A89F91]" : "text-[#8F867A]"} font-sans`}>
+                  <p className={`text-[11px] tracking-wide font-sans ${estiloActivo.textoSecundario}`}>
                     {data.direccion}
                   </p>
                 )}
@@ -102,17 +138,12 @@ const LayoutBasico = ({ data, estiloActivo }: { data: any, estiloActivo: any }) 
                   href={data.mapa}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-2 px-8 py-3 rounded-full border ${
-                    esOscuro 
-                      ? "border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black" 
-                      : "border-[#C5A880] text-[#7A623A] hover:bg-[#C5A880] hover:text-white"
-                  } text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-all shadow-xs`}
+                  className={`inline-flex items-center gap-2 px-8 py-3 rounded-full border text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-all shadow-xs ${estiloActivo.bordeAcento} ${estiloActivo.acento} hover:opacity-80`}
                 >
                   📍 Abrir en Google Maps
                 </a>
               </div>
             )}
-
           </div>
 
           {/* Botón de Confirmación por WhatsApp */}
@@ -126,12 +157,10 @@ const LayoutBasico = ({ data, estiloActivo }: { data: any, estiloActivo: any }) 
               <MessageCircle size={18} />
               <span>Confirmar Asistencia</span>
             </a>
-
-            <p className={`text-[10px] uppercase tracking-widest font-sans opacity-50 pt-2`}>
+            <p className="text-[10px] uppercase tracking-widest font-sans opacity-50 pt-2">
               Te esperamos con mucha alegría
             </p>
           </div>
-
         </div>
 
       </main>
@@ -140,16 +169,17 @@ const LayoutBasico = ({ data, estiloActivo }: { data: any, estiloActivo: any }) 
 };
 
 // =========================================================================
-// 2. MOTOR MODERADO ($790)
+// 2. MOTOR MODERADO ($790 - Papelería + Audio + Contador + WhatsApp)
 // =========================================================================
-const LayoutModerado = ({ data }: { data: any }) => {
-  const tema = data.tema || ESTILOS.crema_lujo;
+const LayoutModerado = ({ data, estiloActivo }: { data: any, estiloActivo: any }) => {
   const [sobreAbierto, setSobreAbierto] = useState(false);
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const esBoda = data.tipo === "boda";
-  const encabezadoFestejo = esBoda ? "¡Nos Casamos!" : data.tipo === "xv" ? "¡Mis XV Años!" : "¡Festejemos!";
+  const cat = (data.categoria || data.tipo || "boda").toLowerCase();
+  const configCat = CONFIG_CATEGORIAS[cat] || CONFIG_CATEGORIAS.boda;
+  const esOscuro = estiloActivo.modoOscuro;
+  const insigniaIcono = estiloActivo.id === "verde_olivo" ? "🌿" : configCat.insignia;
 
   const abrirSobre = () => {
     setSobreAbierto(true);
@@ -169,92 +199,61 @@ const LayoutModerado = ({ data }: { data: any }) => {
   };
 
   const mensajeWhatsApp = encodeURIComponent(
-    esBoda
-      ? `¡Hola! Confirmo con mucho gusto mi asistencia a la boda de ${data.nombre} 💍✨`
-      : `¡Hola ${data.nombre}! Confirmo mi asistencia a tu evento 🎉`
+    `¡Hola! Confirmo con mucho gusto mi asistencia para ${data.nombre} 🎉✨`
   );
 
-  // Cumpleaños Moderado
-  if (!esBoda) {
-    return (
-      <div className={`min-h-screen ${tema.fondo} ${tema.fuente} pb-20 antialiased`}>
-        <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={false} />
-        
-        <header className="relative h-[50vh]">
-          <img src={data.foto_hero} className="w-full h-full object-cover" alt={data.nombre} />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white">
-            <div className="text-center px-4">
-              <h1 className="text-5xl font-black mb-2 tracking-tighter drop-shadow-md">{data.nombre}</h1>
-              <p className="uppercase tracking-[0.4em] text-sm font-medium opacity-90">{data.titulo}</p>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-md mx-auto -mt-10 relative z-10 px-4 space-y-8">
-          <CuentaRegresiva fechaISO={data.fechaISO} variante="fiesta" />
-          <GaleriaLookbook fotos={data.galeria} permitirZoom={false} />
-          
-          <a
-            href={`https://wa.me/${data.wa_confirmar}?text=${mensajeWhatsApp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white py-5 rounded-[2rem] font-bold shadow-xl active:scale-95 transition-all text-sm"
-          >
-            <MessageCircle size={20} /> Confirmar Asistencia
-          </a>
-        </main>
-      </div>
-    );
-  }
-
-  // Boda / Evento Elegante Moderado
   return (
-    <div className="min-h-screen bg-[#F7F4EE] text-[#33302C] flex justify-center py-0 md:py-8 px-0 md:px-4 font-serif antialiased selection:bg-[#C5A880] selection:text-white relative">
-      <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={false} />
+    <div className={`min-h-screen ${estiloActivo.fondo} ${estiloActivo.textoPrincipal} flex justify-center py-0 md:py-8 px-0 md:px-4 ${estiloActivo.fuente} antialiased relative`}>
+      <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={false} esOscuro={esOscuro} estilo={estiloActivo} />
 
       <AnimatePresence mode="wait">
         {!sobreAbierto && (
-          <SobreModal alAbrir={abrirSobre} nombre={data.nombre} fecha={data.fecha} />
+          estiloActivo.id === "verde_olivo" ? (
+            <SobreBotanico alAbrir={abrirSobre} nombre={data.nombre} fecha={data.fecha} />
+          ) : (
+            <SobreModal alAbrir={abrirSobre} nombre={data.nombre} fecha={data.fecha} estilo={estiloActivo} />
+          )
         )}
       </AnimatePresence>
 
-      <main className="w-full max-w-md bg-[#FAF8F5] min-h-screen shadow-2xl relative border-x border-[#EBE4D8] overflow-hidden">
-        <header className="relative pt-10 px-6 pb-6 flex flex-col items-center bg-gradient-to-b from-[#EFE8DA] to-[#FAF8F5]">
-          <div className="w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 border-white bg-white">
+      <main className={`w-full max-w-md ${estiloActivo.tarjeta} min-h-screen shadow-2xl relative border-x overflow-hidden`}>
+        <header className="relative pt-10 px-6 pb-6 flex flex-col items-center">
+          <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${estiloActivo.bordeAcento || estiloActivo.bordeDorado}`}>
             <img src={data.foto_hero} alt={data.nombre} className="w-full h-full object-cover" />
           </div>
-          <div className="w-full -mt-10 pt-12 pb-6 px-6 bg-[#E3D4B6] rounded-2xl shadow-lg border border-[#D1BE99] text-center relative z-10">
-            <h1 className="text-4xl md:text-5xl italic text-[#3F372C] leading-none">{data.nombre}</h1>
-            <p className="text-[10px] uppercase tracking-[0.35em] text-[#73634B] mt-3 font-sans font-medium">
-              {data.titulo}
+          <div className={`w-full -mt-10 pt-12 pb-6 px-6 ${estiloActivo.tarjeta} rounded-2xl shadow-lg border ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center relative z-10`}>
+            <h1 className="text-4xl md:text-5xl italic leading-none">{data.nombre}</h1>
+            <p className={`text-[10px] uppercase tracking-[0.35em] ${estiloActivo.acento} mt-3 font-sans font-medium`}>
+              {data.titulo || configCat.subtituloHeader}
             </p>
           </div>
         </header>
 
-        <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={true} />
+        <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={true} esOscuro={esOscuro} estilo={estiloActivo} />
 
-        {/* Tarjeta con encabezado dinámico */}
+        {/* Tarjeta Central */}
         <section className="px-6 py-6">
-          <div className="relative bg-white rounded-2xl p-8 pt-12 shadow-md border-2 border-[#D4AF37]/35 text-center space-y-6">
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-[#E2B755] via-[#C99C35] to-[#997316] shadow-md border-2 border-white flex items-center justify-center">
-              <span className="text-white text-lg">⚜</span>
+          <div className={`relative ${estiloActivo.tarjeta} rounded-2xl p-8 pt-12 shadow-md border-2 ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center space-y-6`}>
+            <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full ${estiloActivo.acentoBg} text-white shadow-md border-2 border-white flex items-center justify-center`}>
+              <span className="text-lg">{insigniaIcono}</span>
             </div>
-            <h2 className="text-4xl italic text-[#2E2820]">{encabezadoFestejo}</h2>
-            <p className="text-[11px] leading-relaxed uppercase tracking-[0.18em] text-[#696156] font-sans font-light px-2">"{data.frase}"</p>
-            <div className="py-6 border-y border-[#EBE4D8] space-y-2">
-              <div className="flex items-center justify-center gap-4 text-[#2E2820]">
+            <h2 className="text-4xl italic">{configCat.tituloCelebracion}</h2>
+            <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] font-sans font-light px-2 ${estiloActivo.textoSecundario}`}>
+              "{data.frase || configCat.textoDefaultFrase}"
+            </p>
+            <div className="py-6 border-y border-current/15 space-y-2">
+              <div className="flex items-center justify-center gap-4">
                 <span className="text-2xl font-serif font-light">{data.fecha}</span>
               </div>
-              <p className="text-[11px] tracking-[0.2em] uppercase text-[#8F867A] pt-1 font-sans">{data.direccion}</p>
+              <p className={`text-[11px] tracking-[0.2em] uppercase pt-1 font-sans ${estiloActivo.textoSecundario}`}>{data.direccion}</p>
             </div>
           </div>
         </section>
 
-        <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={false} />
-        <GaleriaLookbook fotos={data.galeria} esOscuro={false} permitirZoom={false} />
-        {/* Corrección de parámetros: lugarGeneral y mapaGeneral */}
-        <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={false} />
-        <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={false} conPaleta={false} />
+        <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={esOscuro} estilo={estiloActivo} />
+        <GaleriaLookbook fotos={data.galeria} esOscuro={esOscuro} estilo={estiloActivo} permitirZoom={false} />
+        <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={esOscuro} estilo={estiloActivo} />
+        <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={esOscuro} estilo={estiloActivo} conPaleta={false} />
 
         {/* Confirmación WhatsApp */}
         <section className="px-6 pt-6 pb-20">
@@ -262,7 +261,7 @@ const LayoutModerado = ({ data }: { data: any }) => {
             href={`https://wa.me/${data.wa_confirmar}?text=${mensajeWhatsApp}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white py-5 rounded-[2rem] font-bold shadow-xl active:scale-95 transition-all text-sm"
+            className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white py-5 rounded-[2rem] font-bold shadow-xl active:scale-95 transition-all text-sm cursor-pointer"
           >
             <MessageCircle size={20} /> Confirmar Asistencia
           </a>
@@ -273,7 +272,7 @@ const LayoutModerado = ({ data }: { data: any }) => {
 };
 
 // =========================================================================
-// 3. MOTOR AVANZADO ($1,490)
+// 3. MOTOR AVANZADO ($1,490 - Lujo + Pases + Supabase RSVP)
 // =========================================================================
 const LayoutAvanzado = ({ 
   data, 
@@ -290,9 +289,10 @@ const LayoutAvanzado = ({
   const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const esBoda = data.tipo === "boda";
+  const cat = (data.categoria || data.tipo || "boda").toLowerCase();
+  const configCat = CONFIG_CATEGORIAS[cat] || CONFIG_CATEGORIAS.boda;
   const esOscuro = estiloActivo.modoOscuro;
-  const encabezadoFestejo = esBoda ? "¡Nos Casamos!" : data.tipo === "xv" ? "¡Mis XV Años!" : "¡Festejemos Juntos!";
+  const insigniaIcono = estiloActivo.id === "verde_olivo" ? "🌿" : configCat.insignia;
 
   const abrirInvitacion = () => {
     setAperturaCompletada(true);
@@ -314,102 +314,75 @@ const LayoutAvanzado = ({
   };
 
   const enlaceGoogleCalendar = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-    `${data.titulo} - ${data.nombre}`
+    `${data.titulo || configCat.subtituloHeader} - ${data.nombre}`
   )}&details=${encodeURIComponent(data.frase || "")}&location=${encodeURIComponent(`${data.lugar || ""}, ${data.direccion || ""}`)}`;
 
-  // Cumpleaños Avanzado (Fiesta VIP)
-  if (!esBoda) {
-    return (
-      <div className="min-h-screen bg-[#0A0713] text-[#F3EFE6] font-sans antialiased pb-24 selection:bg-[#8B5CF6] selection:text-white relative">
-        <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} mostrarBarra={false} />
-
-        <header className="relative h-[65vh] flex items-center justify-center text-center overflow-hidden">
-          <img src={data.foto_hero} className="absolute inset-0 w-full h-full object-cover opacity-50" alt={data.nombre} />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-[#0A0713]/40 to-[#0A0713]" />
-          <div className="relative z-10 p-6 space-y-4 max-w-md">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#A78BFA] text-[11px] font-bold tracking-widest uppercase">
-              <Sparkles size={14} /> Fiesta VIP Exclusiva
-            </div>
-            <h1 className="text-6xl font-black tracking-tight text-white drop-shadow-2xl">{data.nombre}</h1>
-            <p className="text-2xl font-light text-[#C4B5FD] tracking-wide">{data.titulo}</p>
-            <div className="h-[1px] w-20 bg-gradient-to-r from-transparent via-[#8B5CF6] to-transparent mx-auto" />
-            <p className="text-sm font-semibold tracking-widest uppercase text-white/80">{data.fecha} • {data.hora}</p>
-          </div>
-        </header>
-
-        <main className="max-w-md mx-auto px-6 space-y-12 -mt-10 relative z-20">
-          <div className="bg-[#140F24] border border-[#8B5CF6]/40 rounded-3xl p-8 text-center space-y-3 shadow-lg">
-            <PartyPopper className="mx-auto text-[#A78BFA]" size={30} />
-            <p className="text-[10px] uppercase tracking-[0.3em] text-[#A78BFA] font-bold">
-              {nombreInvitado ? `Acceso VIP: ${nombreInvitado.replace('+', ' ')}` : "Pase VIP Personalizado"}
-            </p>
-            <h3 className="text-2xl font-black text-white">Tienes {pasesTotales} {pasesTotales === 1 ? 'acceso reservado' : 'accesos reservados'}</h3>
-          </div>
-
-          <CuentaRegresiva fechaISO={data.fechaISO} variante="fiesta" />
-          <GaleriaLookbook fotos={data.galeria} permitirZoom={true} />
-          <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={true} />
-
-          <div className="text-center space-y-5">
-            <p className="italic text-base text-[#D1D5DB] px-4">"{data.frase}"</p>
-            <a href={enlaceGoogleCalendar} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-8 py-3 rounded-full bg-[#8B5CF6] text-white text-xs font-bold tracking-widest uppercase transition-all shadow-lg active:scale-95">
-              <CalendarPlus size={16} /> Agendar en Google Calendar
-            </a>
-          </div>
-
-          <FormularioRSVP idSupabase={data.id_supabase} pasesTotales={pasesTotales} nombreInvitado={nombreInvitado} esOscuro={true} />
-        </main>
-      </div>
-    );
-  }
-
-  // Boda / Evento Avanzado (Crema vs Black Tie)
   return (
-    <div className={`min-h-screen ${esOscuro ? "bg-[#080808]" : "bg-[#F7F4EE]"} flex justify-center py-0 md:py-8 px-0 md:px-4 font-serif antialiased selection:bg-[#C5A880] selection:text-white relative`}>
-      <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} esOscuro={esOscuro} mostrarBarra={false} />
+    <div className={`min-h-screen ${estiloActivo.fondo} ${estiloActivo.textoPrincipal} flex justify-center py-0 md:py-8 px-0 md:px-4 ${estiloActivo.fuente} antialiased relative`}>
+      <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} esOscuro={esOscuro} estilo={estiloActivo} mostrarBarra={false} />
 
+      {/* APERTURA INTELIGENTE SEGÚN ESTILO */}
       <AnimatePresence mode="wait">
         {!aperturaCompletada && (
-          esOscuro ? (
-            <PuertasGala alAbrir={abrirInvitacion} nombre={data.nombre} />
+          estiloActivo.id === "verde_olivo" ? (
+            <SobreBotanico 
+              alAbrir={abrirInvitacion} 
+              nombre={data.nombre} 
+              fecha={data.fecha} 
+              nombreInvitado={nombreInvitado} 
+              pasesTotales={pasesTotales} 
+            />
+          ) : esOscuro ? (
+            <PuertasGala 
+              alAbrir={abrirInvitacion} 
+              nombre={data.nombre} 
+              estilo={estiloActivo} 
+            />
           ) : (
-            <SobreModal alAbrir={abrirInvitacion} nombre={data.nombre} fecha={data.fecha} nombreInvitado={nombreInvitado} pasesTotales={pasesTotales} />
+            <SobreModal 
+              alAbrir={abrirInvitacion} 
+              nombre={data.nombre} 
+              fecha={data.fecha} 
+              nombreInvitado={nombreInvitado} 
+              pasesTotales={pasesTotales} 
+              estilo={estiloActivo} 
+            />
           )
         )}
       </AnimatePresence>
 
-      <main className={`w-full max-w-md ${esOscuro ? "bg-[#121110] border-[#C5A880]/30 text-[#F3EFE6]" : "bg-[#FAF8F5] border-[#EBE4D8] text-[#33302C]"} min-h-screen shadow-2xl relative border-x overflow-hidden`}>
-        <header className={`relative pt-10 px-6 pb-6 flex flex-col items-center ${esOscuro ? "bg-gradient-to-b from-[#1C1A17] to-[#121110]" : "bg-gradient-to-b from-[#EFE8DA] to-[#FAF8F5]"}`}>
-          <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${esOscuro ? "border-[#222] bg-[#141414]" : "border-white bg-white"}`}>
+      <main className={`w-full max-w-md ${estiloActivo.tarjeta} min-h-screen shadow-2xl relative border-x overflow-hidden`}>
+        <header className="relative pt-10 px-6 pb-6 flex flex-col items-center">
+          <div className={`w-[82%] aspect-[3/4] rounded-t-2xl overflow-hidden shadow-xl border-4 ${estiloActivo.bordeAcento || estiloActivo.bordeDorado}`}>
             <img src={data.foto_hero} alt={data.nombre} className="w-full h-full object-cover" />
           </div>
-          <div className={`w-full -mt-10 pt-12 pb-6 px-6 ${esOscuro ? "bg-[#1E1B17] border-[#C5A880]/30 text-[#FAF8F5]" : "bg-[#E3D4B6] border-[#D1BE99] text-[#3F372C]"} rounded-2xl shadow-lg border text-center relative z-10`}>
+          <div className={`w-full -mt-10 pt-12 pb-6 px-6 ${estiloActivo.tarjeta} rounded-2xl shadow-lg border ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center relative z-10`}>
             <h1 className="text-4xl md:text-5xl italic leading-none">{data.nombre}</h1>
-            <p className={`text-[10px] uppercase tracking-[0.35em] ${esOscuro ? "text-[#D4AF37]" : "text-[#73634B]"} mt-3 font-sans font-medium`}>
-              {data.titulo}
+            <p className={`text-[10px] uppercase tracking-[0.35em] ${estiloActivo.acento} mt-3 font-sans font-medium`}>
+              {data.titulo || configCat.subtituloHeader}
             </p>
           </div>
         </header>
 
-        <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} esOscuro={esOscuro} mostrarBarra={true} />
+        <ReproductorMusica audioRef={audioRef} playing={playing} toggleAudio={toggleAudio} musicaUrl={data.musica_url} esOscuro={esOscuro} estilo={estiloActivo} mostrarBarra={true} />
 
-        {/* Tarjeta dinámica */}
+        {/* Tarjeta Central Dinámica */}
         <section className="px-6 py-6">
-          <div className={`relative ${esOscuro ? "bg-[#181614] border-[#D4AF37]/35" : "bg-white border-[#D4AF37]/35"} rounded-2xl p-8 pt-12 shadow-md border-2 text-center space-y-6`}>
-            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full bg-gradient-to-br from-[#E2B755] via-[#C99C35] to-[#997316] shadow-md border-2 border-white flex items-center justify-center">
-              <span className="text-white text-lg">⚜</span>
+          <div className={`relative ${estiloActivo.tarjeta} rounded-2xl p-8 pt-12 shadow-md border-2 ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center space-y-6`}>
+            <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-13 h-13 rounded-full ${estiloActivo.acentoBg} text-white shadow-md border-2 border-white flex items-center justify-center`}>
+              <span className="text-lg">{insigniaIcono}</span>
             </div>
 
-            <h2 className={`text-4xl italic ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>{encabezadoFestejo}</h2>
-            <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] ${esOscuro ? "text-[#D9CEBA]" : "text-[#696156]"} font-sans font-light px-2`}>
-              "{data.frase}"
+            <h2 className="text-4xl italic">{configCat.tituloCelebracion}</h2>
+            <p className={`text-[11px] leading-relaxed uppercase tracking-[0.18em] font-sans font-light px-2 ${estiloActivo.textoSecundario}`}>
+              "{data.frase || configCat.textoDefaultFrase}"
             </p>
 
-            <div className={`py-6 border-y ${esOscuro ? "border-[#C5A880]/20" : "border-[#EBE4D8]"} space-y-2`}>
-              <div className="flex items-center justify-center gap-4 text-[#2E2820]">
-                <span className={`text-2xl font-serif ${esOscuro ? "text-[#FAF8F5]" : "text-[#2E2820]"}`}>{data.fecha}</span>
+            <div className="py-6 border-y border-current/15 space-y-2">
+              <div className="flex items-center justify-center gap-4">
+                <span className="text-2xl font-serif">{data.fecha}</span>
               </div>
-              <p className={`text-[11px] tracking-[0.2em] uppercase ${esOscuro ? "text-[#A89F91]" : "text-[#8F867A]"} pt-1 font-sans`}>
+              <p className={`text-[11px] tracking-[0.2em] uppercase pt-1 font-sans ${estiloActivo.textoSecundario}`}>
                 {data.direccion}
               </p>
             </div>
@@ -418,33 +391,34 @@ const LayoutAvanzado = ({
               href={enlaceGoogleCalendar}
               target="_blank"
               rel="noopener noreferrer"
-              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full ${esOscuro ? "bg-[#1C1A17] border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black" : "bg-[#FAF6EE] border-[#C5A880] text-[#7A623A] hover:bg-[#C5A880] hover:text-white"} border text-xs font-sans font-semibold tracking-wider transition-all shadow-xs`}
+              className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full border text-xs font-sans font-semibold tracking-wider transition-all shadow-xs ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} ${estiloActivo.acento} hover:opacity-80`}
             >
               <CalendarPlus size={16} /> Agendar en Google Calendar
             </a>
           </div>
         </section>
 
-        <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={esOscuro} />
-        <GaleriaLookbook fotos={data.galeria} esOscuro={esOscuro} permitirZoom={true} />
-        {/* Corrección de parámetros: lugarGeneral y mapaGeneral */}
-        <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={esOscuro} />
-        <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={esOscuro} conPaleta={true} />
+        <CuentaRegresiva fechaISO={data.fechaISO} esOscuro={esOscuro} estilo={estiloActivo} />
+        <GaleriaLookbook fotos={data.galeria} esOscuro={esOscuro} estilo={estiloActivo} permitirZoom={true} />
+        <ItinerarioSeccion itinerario={data.itinerario} lugarGeneral={data.lugar} mapaGeneral={data.mapa} esOscuro={esOscuro} estilo={estiloActivo} />
+        <DressCodeSeccion dressCode={data.dressCode} notaDressCode={data.nota_dress_code} esOscuro={esOscuro} estilo={estiloActivo} conPaleta={true} />
 
         {/* Regalos */}
-        <section className="px-6 py-4">
-          <div className={`${esOscuro ? "bg-[#181614] border-[#EBE4D8]/10" : "bg-white border-[#EBE4D8]"} rounded-2xl p-6 shadow-md border text-center space-y-4`}>
-            <h4 className={`text-2xl italic ${esOscuro ? "text-[#D4AF37]" : "text-[#C5A880]"}`}>Regalos</h4>
-            <p className={`text-[11px] leading-relaxed uppercase tracking-[0.15em] ${esOscuro ? "text-[#D9CEBA]" : "text-[#696156]"} font-sans`}>
-              Su compañía es lo más importante. Si deseas hacernos algún obsequio, lo recibiremos con mucho cariño.
-            </p>
-            <a href={data.mesa_regalos} target="_blank" rel="noopener noreferrer" className={`inline-block px-8 py-3 border ${esOscuro ? "border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black" : "border-[#C5A880] text-[#8A6F48] hover:bg-[#C5A880]/10"} text-xs uppercase tracking-[0.2em] rounded-full transition-all font-sans font-semibold`}>
-              Ver Lista
-            </a>
-          </div>
-        </section>
+        {data.mesa_regalos && (
+          <section className="px-6 py-4">
+            <div className={`${estiloActivo.tarjeta} rounded-2xl p-6 shadow-md border ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} text-center space-y-4`}>
+              <h4 className={`text-2xl italic ${estiloActivo.acento}`}>Mesa de Regalos</h4>
+              <p className={`text-[11px] leading-relaxed uppercase tracking-[0.15em] font-sans ${estiloActivo.textoSecundario}`}>
+                Su compañía es lo más importante. Si deseas hacernos algún obsequio, lo recibiremos con mucho cariño.
+              </p>
+              <a href={data.mesa_regalos} target="_blank" rel="noopener noreferrer" className={`inline-block px-8 py-3 border text-xs uppercase tracking-[0.2em] rounded-full transition-all font-sans font-semibold ${estiloActivo.bordeAcento || estiloActivo.bordeDorado} ${estiloActivo.acento} hover:opacity-80`}>
+                Ver Lista
+              </a>
+            </div>
+          </section>
+        )}
 
-        <FormularioRSVP idSupabase={data.id_supabase} pasesTotales={pasesTotales} nombreInvitado={nombreInvitado} esOscuro={esOscuro} />
+        <FormularioRSVP idSupabase={data.id_supabase} pasesTotales={pasesTotales} nombreInvitado={nombreInvitado} esOscuro={esOscuro} estilo={estiloActivo} />
       </main>
     </div>
   );
@@ -521,15 +495,15 @@ function InvitacionDinamica() {
     );
   }
 
-  const estiloActivo = (estiloParam && ESTILOS[estiloParam as keyof typeof ESTILOS]) 
-    ? ESTILOS[estiloParam as keyof typeof ESTILOS] 
-    : (eventoData.tema || (eventoData.estilo_visual && ESTILOS[eventoData.estilo_visual as keyof typeof ESTILOS]) || ESTILOS.crema_lujo);
+  // Resolver estilo visual activo dinámicamente
+  const estiloClave = estiloParam || eventoData.estilo_visual || eventoData.estiloVisual || "crema_lujo";
+  // @ts-ignore
+  const estiloActivo = ESTILOS[estiloClave] || ESTILOS.crema_lujo;
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#F7F4EE] flex items-center justify-center font-serif">Cargando invitación...</div>}>
-      {/* Pasamos estiloActivo también a LayoutBasico para heredar el tema */}
       {modelo === 'basica' && <LayoutBasico data={eventoData} estiloActivo={estiloActivo} />}
-      {modelo === 'moderada' && <LayoutModerado data={eventoData} />}
+      {modelo === 'moderada' && <LayoutModerado data={eventoData} estiloActivo={estiloActivo} />}
       {modelo === 'avanzada' && (
         <LayoutAvanzado 
           data={eventoData} 
